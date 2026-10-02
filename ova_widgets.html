@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OVA · Licenciamiento de software en Colombia</title>
+<style>
+:root{--cr:#FBF3E0;--pg:#F3E4C4;--br:#8A4B2A;--dk:#4E2812;--go:#C8962E;--ok:#5E7B38;--no:#B4503A}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--cr);color:var(--dk);font-family:Georgia,"Times New Roman",serif}
+body{padding:14px;max-width:600px;margin:0 auto;border:3px double var(--br);min-height:100vh;border-radius:6px}
+h1{font-size:1.5rem;margin:2px 0 4px;text-align:center;color:var(--br);letter-spacing:.5px;text-transform:uppercase}
+.sub{text-align:center;margin:0 0 10px;font-size:.9rem}
+.sub:after{content:"✦ ✦ ✦";display:block;color:var(--go);font-size:.7rem;letter-spacing:6px;margin-top:4px}
+button{font:inherit;color:var(--dk);cursor:pointer}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:12px}
+.tab,.opt,.nx button{background:var(--pg);border:2px solid var(--br);border-radius:10px;padding:8px 12px;font-weight:bold;
+ outline:2px dashed rgba(138,75,42,.35);outline-offset:-6px;transition:border-color .15s,transform .15s,background .15s}
+.tab:hover,.opt:hover:not(:disabled),.nx button:hover{border-color:var(--go);transform:translateY(-2px)}
+.tab:focus-visible,.opt:focus-visible,.nx button:focus-visible{outline:3px solid var(--go)}
+.tab .ic{display:block;font-size:1.6rem}
+.tab.sel{background:var(--br);color:var(--cr);border-color:var(--dk)}
+.tl{position:relative;padding-top:6px}
+.tl:before{content:"";position:absolute;left:4%;right:4%;top:50%;border-top:4px solid var(--br);z-index:0}
+.tl .tab{position:relative;z-index:1;border-radius:50px;font-size:1.05rem}
+.panel{background:#FFFBF0;border:2px solid var(--br);border-radius:12px;padding:14px 16px;min-height:90px}
+.panel h2{margin:0 0 6px;font-size:1.15rem;color:var(--br)}
+.panel p{margin:6px 0;line-height:1.45}
+.ex{background:var(--pg);border-left:5px solid var(--go);padding:6px 10px;border-radius:4px}
+.hint{text-align:center;color:var(--br);margin:18px 0}
+.pop{animation:pop .25s ease-out}
+@keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+.q{font-weight:bold;font-size:1.05rem;line-height:1.4;margin:0 0 10px}.q small{color:var(--br);font-weight:normal}
+.opts{display:grid;gap:8px}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;position:relative;width:100%}
+.opt .l{flex:none;width:28px;height:28px;border-radius:50%;background:var(--br);color:var(--cr);display:grid;place-items:center;font-size:.9rem}
+.opt.sel{background:#EBD6A8}
+.opt.ok{background:#E3EBCF;border-color:var(--ok)}.opt.bad{background:#F4DAD2;border-color:var(--no)}
+.opt:disabled{cursor:default;opacity:.85}
+.mk{margin-left:auto;font-size:1.4rem;font-weight:bold;animation:pop .3s}
+.ok .mk{color:var(--ok)}.bad .mk{color:var(--no)}
+.fb{margin-top:10px;padding:8px 10px;border-radius:8px;line-height:1.4}.fb:empty{display:none}
+.fb.ok{background:#E3EBCF;border:2px solid var(--ok)}.fb.bad{background:#F4DAD2;border:2px solid var(--no)}
+.nx{margin-top:10px;text-align:center}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cmp div{background:var(--pg);border:2px solid var(--br);border-radius:10px;padding:8px 10px}
+.cmp h3{margin:0 0 4px;font-size:1rem;color:var(--br)}
+.end{text-align:center;position:relative;overflow:hidden;padding:14px 0}
+.stamp{display:inline-block;border:4px double var(--br);color:var(--br);padding:10px 16px;border-radius:10px;font-size:1.5rem;font-weight:bold;transform:rotate(-3deg);animation:pop .5s}
+.st{position:absolute;top:-20px;color:var(--go);animation:fall 2.6s ease-in forwards}
+@keyframes fall{to{transform:translateY(240px) rotate(240deg);opacity:0}}
+#mute{position:fixed;right:10px;bottom:8px;background:none;border:0;font-size:1.2rem;opacity:.7}
+.menu a{display:block;margin:6px 0;color:var(--br);font-weight:bold}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head>
+<body>
+<div id="root"></div>
+<button id="mute" title="Sonido" aria-label="Activar o silenciar sonido">🔊</button>
+<script>
+/* ====== CONTENIDO (BORRADOR: validar con el Material de apoyo) ====== */
+const OPT3=["PROPIETARIA","LIBRE","OPEN SOURCE","FREEWARE"];
+const W={
+p2:{title:"¿Qué es el licenciamiento?",open:0,items:[
+ {label:"ⓘ Significado",t:"Licenciamiento",d:"Conjunto de condiciones que fija el titular para usar un programa: qué se puede hacer, durante cuánto tiempo, en cuántos equipos y con qué restricciones."},
+ {label:"VER EJEMPLO",t:"Ejemplo sencillo",d:"Ejemplo didáctico (no es un producto real):",ex:"Licencia para 5 equipos durante 1 año, solo para uso interno de la empresa."}]},
+p3:{title:"¿Qué estás comprando?",quiz:{qs:[{q:"Cuando compras una licencia de software, ¿qué estás adquiriendo?",c:1,
+ o:[["PROPIEDAD DEL SOFTWARE","Tener una licencia no significa ser dueño del software."],
+    ["DERECHO DE USO","Una licencia concede un derecho de uso bajo las condiciones establecidas por el titular."]]}]}},
+p4:{title:"Derechos sobre el software",items:[
+ {label:"DERECHOS MORALES",ic:"✒️",t:"Derechos morales",d:"Reconocen el vínculo del autor con su obra.",ex:"Que se reconozca quién creó el programa."},
+ {label:"DERECHOS PATRIMONIALES",ic:"⚖️",t:"Derechos patrimoniales",d:"Permiten controlar la explotación económica de la obra.",ex:"Decidir bajo qué condiciones se distribuye o se vende el programa."}]},
+p5:{title:"Marco legal colombiano",sub:"Toca un año",tl:1,items:[
+ {label:"1982",t:"Ley 23 de 1982",d:"Norma sobre derechos de autor, relacionada con la protección del software."},
+ {label:"1989",t:"Decreto 1360 de 1989",d:"Se relaciona con el registro del software como obra protegida."},
+ {label:"1993",t:"Decisión Andina 351 de 1993",d:"Régimen común de derecho de autor y derechos conexos en la región andina."},
+ {label:"2000",t:"Ley 599 de 2000",d:"Código Penal: contiene delitos relacionados con los derechos de autor."}]},
+p6:{title:"Tipos de licencia",items:[
+ {label:"PROPIETARIA",ic:"🔒",t:"Licencia propietaria",d:"El titular conserva el control; el usuario solo usa el programa según las condiciones.",ex:"Un programa de oficina limitado a cierto número de equipos."},
+ {label:"LIBRE",ic:"🕊️",t:"Licencia libre",d:"Garantiza al usuario ejecutar, estudiar, modificar y compartir el software.",ex:"Un sistema operativo como GNU/Linux."},
+ {label:"OPEN SOURCE",ic:"🔓",t:"Open source",d:"Su código fuente está disponible para revisarse y reutilizarse según su licencia.",ex:"Programas publicados con licencia MIT o Apache 2.0."},
+ {label:"FREEWARE",ic:"🎁",t:"Freeware",d:"Se usa sin pagar, pero normalmente no se puede modificar ni redistribuir libremente.",ex:"Un programa gratuito que no entrega su código fuente."},
+ {label:"¿QUÉ TIPO DE LICENCIA ES?",ic:"🔨",quiz:{rot:1,qs:[
+  {q:"Una empresa usa un programa que no deja ver su código y solo permite instalarlo en 3 equipos.",c:0,o:[[OPT3[0],"Es propietaria: el titular controla cómo y dónde se usa."],[OPT3[1],"No es libre: el usuario no puede estudiarlo ni modificarlo."],[OPT3[2],"No es open source: no se puede ver su código."],[OPT3[3],"Freeware implica no pagar; aquí lo central son las restricciones de uso."]]},
+  {q:"Un programa se puede usar sin pagar, pero no se puede modificar ni ver su código.",c:3,o:[[OPT3[0],"Tiene restricciones, pero lo que define el caso es que se usa sin pagar."],[OPT3[1],"No es libre: no permite estudiar ni modificar."],[OPT3[2],"No es open source: su código no está disponible."],[OPT3[3],"Es freeware: gratuito de usar, con restricciones."]]},
+  {q:"Se publica el código fuente de un programa con licencia MIT para que otros lo revisen y reutilicen.",c:2,o:[[OPT3[0],"No es propietaria: el código está disponible."],[OPT3[3],"Freeware no implica código disponible."],[OPT3[2],"Es open source: el código está disponible para revisarse y reutilizarse."]]}]}}]},
+p7:{title:"Software libre",items:[
+ {label:"01 EJECUTAR",t:"Ejecutar",d:"Usar el programa para cualquier propósito.",ex:"Instalarlo y usarlo en el trabajo o en clase."},
+ {label:"02 ESTUDIAR Y MODIFICAR",t:"Estudiar y modificar",d:"Ver cómo funciona y cambiarlo según tus necesidades.",ex:"Adaptar un programa a las necesidades de tu empresa."},
+ {label:"03 REDISTRIBUIR",t:"Redistribuir",d:"Entregar copias del programa a otras personas.",ex:"Compartir el programa con otro equipo de trabajo."},
+ {label:"04 COMPARTIR MODIFICACIONES",t:"Compartir modificaciones",d:"Publicar tus versiones modificadas para que otros se beneficien.",ex:"Publicar tu versión mejorada."},
+ {label:"¿SOFTWARE LIBRE = GRATIS?",quiz:{qs:[{q:"¿Software libre significa gratis?",c:1,o:[["SÍ","Libre se refiere a las libertades del usuario, no necesariamente al precio."],["NO","Libre se refiere a las libertades del usuario y no necesariamente al precio."]]}]}}]},
+p8:{title:"Licencias más conocidas",items:[
+ {label:"MIT",t:"MIT",d:"Licencia permisiva y breve.",ex:"Útil para reutilizar código con pocas condiciones."},
+ {label:"APACHE 2.0",t:"Apache 2.0",d:"Permisiva, con aviso de cambios y cláusula de patentes.",ex:"Útil en proyectos donde importa la claridad sobre patentes."},
+ {label:"GPL",t:"GPL",d:"Copyleft: los derivados deben mantener la misma licencia.",ex:"Útil para que las mejoras sigan siendo libres."},
+ {label:"AGPL",t:"AGPL",d:"Como la GPL, e incluye programas ofrecidos como servicio en red.",ex:"Útil cuando el software se usa a través de la red."},
+ {label:"¿QUIERES COMPARARLAS?",html:'<div class="cmp"><div><h3>Permisivas</h3><b>MIT · Apache 2.0</b><p>✓ Pocas condiciones<br>✓ Derivados pueden cerrarse</p></div><div><h3>Copyleft</h3><b>GPL · AGPL</b><p>✓ Derivados con la misma licencia<br>✓ Mejoras siguen abiertas</p></div></div>'}]},
+p9:{title:"Caso práctico",sub:"Una empresa compró una licencia limitada y quiere instalarla en 15 computadores.",quiz:{cont:1,qs:[{q:"¿Qué debería hacer la empresa?",c:1,o:[
+ ["Instalarla en los 15 equipos, porque ya la compró.","No exactamente: la licencia solo permite usarlo en un número limitado de equipos."],
+ ["Instalarla solo en los equipos que permita la licencia y adquirir licencias adicionales para el resto.","La licencia es un derecho de uso con condiciones, y la empresa debe respetarlas."],
+ ["Instalarla en los 15 y avisar después.","No exactamente: las condiciones de la licencia se respetan antes de instalar."],
+ ["Ignorar las condiciones, porque la licencia es un trámite.","No exactamente: las condiciones son parte de la licencia."]]}]}},
+p10:{title:"Evaluación",sub:"Tres preguntas",quiz:{seq:1,qs:[
+ {q:"¿Qué obtiene el usuario con una licencia de software?",c:0,o:[["Un derecho de uso bajo condiciones.","Correcto: no se obtiene la propiedad del software."],["La propiedad total del software.","La licencia no convierte al usuario en dueño."],["El derecho de autor sobre el programa.","Los derechos de autor siguen con el titular."]]},
+ {q:"¿Qué permiten los derechos patrimoniales?",c:1,o:[["Reconocer el vínculo del autor con su obra.","Eso corresponde a los derechos morales."],["Controlar la explotación económica de la obra.","Correcto: permiten controlar su explotación económica."],["Instalar el software sin límite de equipos.","Eso depende de las condiciones de la licencia."]]},
+ {q:"En software libre, ¿a qué se refiere «libre»?",c:2,o:[["Siempre a que no cuesta nada.","Libre no significa necesariamente gratis."],["A que no tiene licencia.","El software libre también tiene licencia."],["A las libertades del usuario.","Correcto: ejecutar, estudiar, modificar y compartir."]]}]}}
+};
+/* ====== SONIDOS (sintetizados, sin archivos) ====== */
+let AC,mute=false;
+function snd(k){if(mute)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();
+ const S={ok:[[660,0],[880,.12],[1320,.24]],bad:[[220,0],[165,.16]],clk:[[520,0]]}[k];
+ S.forEach(([f,t])=>{const o=AC.createOscillator(),g=AC.createGain(),s=AC.currentTime+t;o.type=k=="bad"?"triangle":"sine";o.frequency.value=f;
+ o.connect(g);g.connect(AC.destination);g.gain.setValueAtTime(.0001,s);g.gain.exponentialRampToValueAtTime(.18,s+.02);
+ g.gain.exponentialRampToValueAtTime(.0001,s+(k=="clk"?.08:.3));o.start(s);o.stop(s+.32)})}catch(e){}}
+document.getElementById("mute").onclick=e=>{mute=!mute;e.target.textContent=mute?"🔇":"🔊"};
+/* ====== MOTOR ====== */
+const root=document.getElementById("root"),P=new URLSearchParams(location.search);
+function go(){parent.postMessage({ova:"continuar"},"*");const n=P.get("next");if(n)window.open(n,"_top")}
+function quiz(Q,host){let qi=0,score=0;show();
+ function show(){const q=Q.qs[qi];
+  host.innerHTML=`<div class="pop"><p class="q">${Q.seq?`<small>Pregunta ${qi+1} de ${Q.qs.length}</small><br>`:""}${q.q}</p>
+  <div class="opts">${q.o.map((o,i)=>`<button class="opt" data-i="${i}"><span class="l">${"ABCD"[i]}</span><span>${o[0]}</span></button>`).join("")}</div>
+  <div class="fb" aria-live="polite"></div><div class="nx"></div></div>`;
+  host.querySelectorAll(".opt").forEach(b=>b.onclick=()=>pick(b,+b.dataset.i))}
+ function pick(b,i){const q=Q.qs[qi],ok=i==q.c,fb=host.querySelector(".fb"),nx=host.querySelector(".nx"),all=[...host.querySelectorAll(".opt")];
+  b.classList.add("sel",ok?"ok":"bad");b.insertAdjacentHTML("beforeend",`<span class="mk">${ok?"✓":"✕"}</span>`);
+  fb.className="fb "+(ok?"ok":"bad");fb.innerHTML=`<b>${ok?"¡Correcto!":"No exactamente."}</b> ${q.o[i][1]}${!ok&&!Q.seq?" Puedes volver a intentarlo.":""}`;
+  snd(ok?"ok":"bad");
+  if(ok)score++;
+  if(!ok&&!Q.seq){b.disabled=true;return}
+  all.forEach(x=>x.disabled=true);if(!ok)all[q.c].classList.add("ok");
+  const last=qi==Q.qs.length-1;
+  if(Q.seq){nx.innerHTML=`<button>${last?"VER RESULTADO":"SIGUIENTE →"}</button>`;nx.firstChild.onclick=()=>{snd("clk");last?finish():(qi++,show())}}
+  else if(Q.rot){nx.innerHTML="<button>OTRA SITUACIÓN</button>";nx.firstChild.onclick=()=>{snd("clk");qi=(qi+1)%Q.qs.length;show()}}
+  else if(Q.cont){nx.innerHTML="<button>CONTINUAR →</button>";nx.firstChild.onclick=go}}
+ function finish(){host.innerHTML=`<div class="end pop"><div class="stamp">¡HAS TERMINADO!</div><p>Acertaste ${score} de ${Q.qs.length}.</p></div>`;snd("ok");
+  const e=host.querySelector(".end");for(let i=0;i<14;i++){const s=document.createElement("span");s.className="st";s.textContent=i%2?"★":"✦";
+  s.style.left=(Math.random()*95)+"%";s.style.animationDelay=(Math.random()*1.2)+"s";e.appendChild(s)}}}
+function app(D,k){
+ root.innerHTML=`<h1>${D.title}</h1>${D.sub?`<p class="sub">${D.sub}</p>`:""}${D.items?`<div class="tabs ${D.tl?"tl":""}">${D.items.map((it,i)=>`<button class="tab" data-i="${i}">${it.ic?`<span class="ic">${it.ic}</span>`:""}${it.label}</button>`).join("")}</div>`:""}<div class="panel" id="panel"></div>`;
+ const panel=document.getElementById("panel");
+ if(D.quiz)return quiz(D.quiz,panel);
+ const tabs=[...root.querySelectorAll(".tab")];
+ function open(i){const it=D.items[i];tabs.forEach((t,j)=>t.classList.toggle("sel",j==i));
+  if(it.quiz)return quiz(it.quiz,panel);
+  panel.innerHTML=`<div class="pop">${it.html||`<h2>${it.t}</h2><p>${it.d}</p>${it.ex?`<p class="ex">${/^Ejemplo/.test(it.d)?"":"<b>Ejemplo:</b> "}${it.ex}</p>`:""}`}</div>`}
+ tabs.forEach((t,i)=>t.onclick=()=>{snd("clk");open(i)});
+ if(P.has("open"))open(+P.get("open"));else if(D.open!=null)open(D.open);else panel.innerHTML='<p class="hint">Toca una opción para explorar</p>'}
+const k=P.get("w");
+if(W[k])app(W[k],k);
+else root.innerHTML='<h1>Widgets del OVA</h1><p class="sub">Pruebas</p><div class="menu">'+Object.keys(W).map(x=>`<a href="?w=${x}">${x} · ${W[x].title}</a>`).join("")+"</div>";
+</script></body></html>
