@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cuaderno</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fredoka:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--br:#7A3F1F;--br2:#5A2D14}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:transparent;font-family:Fredoka,system-ui,sans-serif;overflow:hidden}
+body.fondo{background:#FFF6E3}
+body{display:grid;place-items:center}
+.book{position:relative;height:min(96vh,calc(94vw*1.25));aspect-ratio:4/5;perspective:1500px;container-type:inline-size}
+.paper{position:absolute;inset:0;border-radius:4px 14px 14px 4px;background:#FFFDF5;
+ background-image:linear-gradient(90deg,transparent 15%,#E5877A 15%,#E5877A calc(15% + 2px),transparent calc(15% + 2px)),repeating-linear-gradient(transparent 0 calc(8cqw - 1px),#C9D8E8 calc(8cqw - 1px) 8cqw);
+ background-position:0 6cqw;box-shadow:0 .8cqw 0 rgba(0,0,0,.15);overflow:auto;padding:5cqw 6cqw 5cqw 19cqw;
+ font:700 6cqw/8cqw Caveat,cursive;color:#2B2B6B}
+.paper h2{font:700 8.4cqw/8cqw Caveat,cursive;margin:0 0 8cqw;color:var(--br)}
+.paper p{margin:0 0 8cqw}
+.paper li{list-style:none;position:relative;margin:0 0 8cqw}
+.paper li:before{content:"✎";position:absolute;left:-6cqw;color:var(--br)}
+.paper ul{margin:0;padding:0}
+.holes,.coils{position:absolute;left:0;top:3cqw;bottom:3cqw;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none}
+.holes{left:4cqw;z-index:1}.holes i{width:4cqw;height:4cqw;border-radius:50%;background:#2a1a10;box-shadow:inset 0 .5cqw .8cqw #000}
+.coils{left:-5cqw;z-index:6}.coils i{display:block;width:12cqw;height:3cqw;border-radius:2cqw;background:linear-gradient(#fafafa,#8e8e8e 55%,#dcdcdc);box-shadow:0 .5cqw .8cqw rgba(0,0,0,.45)}
+.cover{position:absolute;inset:0;transform-origin:left center;transition:transform 1s cubic-bezier(.5,0,.2,1),opacity .3s .8s;transform-style:preserve-3d;cursor:pointer;border:0;padding:0;background:none;z-index:3}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:4px 14px 14px 4px}
+.front{background:radial-gradient(circle at 30% 20%,#9A5530,var(--br2));box-shadow:0 .8cqw 0 rgba(0,0,0,.28);display:grid;place-items:center;color:#FFF6E3;border:1.2cqw solid rgba(0,0,0,.12)}
+.front:after{content:"";position:absolute;inset:3cqw 3cqw 3cqw 10cqw;border:.5cqw dashed rgba(255,246,227,.45);border-radius:2cqw}
+.tag{background:#FFF6E3;color:var(--br2);border:.8cqw double var(--br);border-radius:2.5cqw;padding:5cqw 6cqw;width:66%;margin-left:7cqw;font:500 8.5cqw/1.15 Fredoka,sans-serif;transform:rotate(-2deg);z-index:2;text-align:center}
+.tag small{display:block;font-size:4cqw;opacity:.75;margin-top:2.5cqw}
+.band{position:absolute;right:9cqw;top:0;bottom:0;width:3cqw;background:#C8962E;opacity:.92;z-index:1}
+.back{transform:rotateY(180deg);background:linear-gradient(135deg,#6A3519,var(--br2))}
+.book.open .cover{transform:rotateY(-160deg);opacity:0;pointer-events:none}
+.book:not(.open) .cover:hover{transform:rotateY(-12deg)}
+.x{position:sticky;float:right;top:0;margin:-2cqw -2cqw 0 0;width:9cqw;height:9cqw;border-radius:50%;border:.5cqw solid var(--br);background:#fff;color:var(--br);font:700 5cqw/1 Fredoka,sans-serif;cursor:pointer;z-index:4}
+.x:hover{background:var(--br);color:#fff}
+.cover:focus-visible,.x:focus-visible{outline:3px solid #000;outline-offset:3px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+<div class="book" id="book">
+ <div class="paper" id="paper" tabindex="0"></div>
+ <div class="holes" id="holes"></div>
+ <div class="coils" id="coils"></div>
+ <button class="cover" id="cover" aria-label="Abrir el cuaderno">
+  <div class="face front"><span class="band"></span><div class="tag" id="tag"></div></div>
+  <div class="face back"></div>
+ </button>
+</div>
+<script>
+/* ===== AQUÍ CAMBIAS LOS TEXTOS =====
+   Enlace: ova_cuaderno_v2.html?n=1 (o n=2...). Agrega ?fondo=1 si quieres fondo crema.
+   texto: separa párrafos con una línea en blanco; las líneas que empiezan con "* " salen como viñeta. */
+const NOTAS={
+ 1:{titulo:"Software libre",sub:"Toca para abrir",
+    texto:"El software libre se refiere principalmente a las libertades que tiene el usuario, no al precio del programa.\n\n* Estas libertades permiten ejecutar, estudiar, modificar y compartir el software de acuerdo con las condiciones de su licencia."}
+};
+/* ================================== */
+const P=new URLSearchParams(location.search),N=NOTAS[P.get("n")||"1"]||NOTAS[1],$=i=>document.getElementById(i),book=$("book");
+if(P.get("fondo"))document.body.classList.add("fondo");
+$("tag").innerHTML=`${N.titulo}<small>${N.sub||""}</small>`;
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+const blocks=N.texto.split(/\n\s*\n/).map(b=>b.trim().startsWith("* ")?`<ul><li>${esc(b.trim().slice(2))}</li></ul>`:`<p>${esc(b)}</p>`).join("");
+$("paper").innerHTML=`<button class="x" id="x" aria-label="Cerrar cuaderno">✕</button><h2>${esc(N.titulo)}</h2>${blocks}`;
+for(let i=0;i<11;i++){$("holes").appendChild(document.createElement("i"));$("coils").appendChild(document.createElement("i"))}
+/* sonido sintetizado: tapa que se abre / se cierra */
+let AC;
+function sfx(open){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const t=AC.currentTime;
+ const buf=AC.createBuffer(1,AC.sampleRate,AC.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+ const burst=(s,len,f0,f1,v)=>{const n=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();n.buffer=buf;f.type="bandpass";f.Q.value=1.4;
+  f.frequency.setValueAtTime(f0,t+s);f.frequency.exponentialRampToValueAtTime(f1,t+s+len);
+  g.gain.setValueAtTime(.0001,t+s);g.gain.exponentialRampToValueAtTime(v,t+s+len*.35);g.gain.exponentialRampToValueAtTime(.0001,t+s+len);
+  n.connect(f);f.connect(g);g.connect(AC.destination);n.start(t+s);n.stop(t+s+len+.05)};
+ const thump=(s,f0,f1,v)=>{const o=AC.createOscillator(),g=AC.createGain();o.type="sine";o.frequency.setValueAtTime(f0,t+s);o.frequency.exponentialRampToValueAtTime(f1,t+s+.18);
+  g.gain.setValueAtTime(v,t+s);g.gain.exponentialRampToValueAtTime(.0001,t+s+.2);o.connect(g);g.connect(AC.destination);o.start(t+s);o.stop(t+s+.22)};
+ if(open){thump(0,140,60,.35);burst(.02,.75,350,1900,.5);burst(.62,.25,2600,900,.25)}
+ else{burst(0,.22,2200,900,.25);burst(.12,.6,1700,350,.45);thump(.65,120,55,.35)}}catch(e){}}
+function set(o){if(book.classList.contains("open")==o)return;book.classList.toggle("open",o);sfx(o);$("cover").setAttribute("aria-label",o?"":"Abrir el cuaderno");if(o)$("paper").focus({preventScroll:true});else $("paper").scrollTop=0}
+$("cover").onclick=()=>set(true);$("x").onclick=()=>set(false);
+</script></body></html>
