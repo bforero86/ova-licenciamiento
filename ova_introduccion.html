@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>¿Qué es el licenciamiento? · OVA Licenciamiento de software</title>
+<meta name="description" content="Página ¿Qué es el licenciamiento de software?: simulación de instalación y actividad para descubrir las condiciones de una licencia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fraunces:opsz,wght@9..144,500;9..144,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<!--
+  OVA · Licenciamiento de software en Colombia
+  ova_introduccion.html
+  Parámetros: ?back=URL  ?next=URL  ?open=N (1-6)  ?equipo=1 (resalta [VERIFICAR] para revisión)
+-->
+<style>
+:root{
+  --papel:#FBF6EA;--crema:#F3E9D2;--tarjeta:#FFFDF7;--tinta:#2E2118;--tinta-2:#5A4636;
+  --cuero:#6B4A2F;--dorado:#C9973A;--dorado-texto:#7F5A12;--oliva:#55622A;--oliva-claro:#E9EDD6;
+  --terracota:#A3462B;--terracota-claro:#F6E1D8;--azul-tinta:#2F4A5C;--azul-claro:#DFE8EE;
+  --codigo-fondo:#2A2420;--linea:rgba(107,74,47,.24);
+  --r:14px;--sombra:0 1px 0 rgba(46,33,24,.05),0 12px 30px -16px rgba(46,33,24,.5);
+  --ft:"Fraunces",Georgia,"Times New Roman",serif;
+  --fb:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --fm:"JetBrains Mono",ui-monospace,Consolas,"Courier New",monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+html{overflow:hidden}
+body{
+  height:100vh;height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr) auto;overflow:hidden;
+  background:var(--papel);color:var(--tinta);
+  background-image:radial-gradient(circle at 18% 0%,rgba(201,151,58,.10),transparent 42%),radial-gradient(circle at 100% 100%,rgba(85,98,42,.08),transparent 45%);
+  font:400 clamp(16px,.95rem + .2vw,18px)/1.55 var(--fb);
+}
+h1,h2,h3,h4{font-family:var(--ft);line-height:1.15;color:var(--tinta)}
+a{color:var(--dorado-texto)}
+p{margin:0 0 .8em}
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:-9999px;top:8px;z-index:200;background:var(--tinta);color:var(--papel);padding:10px 14px;border-radius:8px}
+.skip:focus{left:8px}
+:focus-visible{outline:3px solid var(--tinta);outline-offset:2px;box-shadow:0 0 0 6px var(--dorado);border-radius:6px}
+button{font:inherit;color:inherit}
+
+/* ---------- Barra superior ---------- */
+.top{display:flex;align-items:center;gap:12px;padding:8px clamp(10px,2vw,20px);background:var(--crema);border-bottom:1px solid var(--linea);min-height:62px;position:relative;z-index:30}
+.btn-back{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:8px 14px;border-radius:999px;background:var(--tinta);color:var(--papel);text-decoration:none;font-weight:700;font-size:15px;white-space:nowrap;cursor:pointer;border:0}
+.btn-back:hover{background:#4a3627}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.brand svg{flex:none}
+.brand-txt{min-width:0}
+.kicker{display:block;font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--dorado-texto);font-weight:700}
+.brand h1{font-size:clamp(17px,1rem + .6vw,24px);margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.segs{display:flex;gap:2px;align-items:center}
+.seg{width:30px;height:30px;padding:0;border:0;background:transparent;cursor:pointer;display:grid;place-items:center}
+.seg::before{content:"";width:24px;height:9px;border-radius:6px;border:1.5px solid var(--cuero);background:transparent}
+.seg.visto::before{background:linear-gradient(90deg,var(--dorado) 50%,transparent 50%)}
+.seg.hecho::before{background:var(--oliva);border-color:var(--oliva)}
+.seg[aria-current="step"]::before{box-shadow:0 0 0 2px var(--papel),0 0 0 4px var(--tinta)}
+.iconbtn{width:44px;height:44px;flex:none;border-radius:12px;border:1px solid var(--linea);background:var(--tarjeta);display:inline-grid;place-items:center;cursor:pointer;color:var(--tinta)}
+.iconbtn:hover{background:#fff}
+#btnApoyo{display:none;width:auto;padding:0 12px;gap:6px;grid-auto-flow:column;font-weight:700;font-size:14px}
+
+/* ---------- Retícula ---------- */
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr) 330px;min-height:0}
+.secnav{background:var(--crema);border-right:1px solid var(--linea);padding:18px 12px;overflow:auto}
+.secnav h2{font-size:13px;font-family:var(--fb);text-transform:uppercase;letter-spacing:.09em;color:var(--tinta-2);margin:0 8px 10px}
+.secnav ol{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.secnav button{width:100%;text-align:left;display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:center;padding:9px 10px;border-radius:12px;border:1px solid transparent;background:transparent;cursor:pointer}
+.secnav button:hover{background:rgba(255,253,247,.6)}
+.secnav .num{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--cuero);font:700 15px/1 var(--ft);background:var(--papel)}
+.secnav .lbl{font-weight:700;font-size:15px;line-height:1.25}
+.secnav .sub{display:block;font-weight:400;font-size:13px;color:var(--tinta-2)}
+.secnav button[aria-current="true"]{background:var(--tarjeta);border-color:var(--linea);box-shadow:var(--sombra)}
+.secnav button[aria-current="true"] .num{background:var(--dorado);border-color:var(--dorado)}
+.secnav li.hecho .num{background:var(--oliva);border-color:var(--oliva);color:#fff}
+.nav-foot{margin:18px 8px 0;font-size:13px;color:var(--tinta-2);border-top:1px dashed var(--linea);padding-top:12px}
+
+.stage{overflow:auto;padding:clamp(18px,3vw,40px) clamp(16px,3.5vw,52px) 40px;container-type:inline-size;position:relative;outline:none}
+.sec{max-width:1240px;margin:0 auto;animation:entra .45s ease both}
+@keyframes entra{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--dorado-texto)}
+.eyebrow::before{content:"";width:22px;height:2px;background:var(--dorado)}
+h2.t{font-weight:700;font-size:clamp(27px,1.1rem + 1.7vw,44px);margin:.2em 0 .3em;outline:none}
+.lead{font-size:1.07em;color:var(--tinta-2);max-width:72ch;margin:0 0 1.4em}
+
+.apoyo{background:var(--crema);border-left:1px solid var(--linea);padding:18px 16px;overflow:auto}
+.apoyo-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.apoyo-head h2{font-size:13px;font-family:var(--fb);text-transform:uppercase;letter-spacing:.09em;color:var(--tinta-2);margin:0}
+#apoyoClose{display:none}
+.blk{background:var(--tarjeta);border:1px solid var(--linea);border-radius:12px;padding:14px 15px;margin-bottom:12px;font-size:15px}
+.blk h3{font-size:17px;margin:0 0 8px;display:flex;gap:8px;align-items:center}
+.blk dl{margin:0}.blk dt{font-weight:700;margin-top:8px}.blk dd{margin:2px 0 0}
+.blk ul{margin:0;padding-left:18px}
+.blk.fuente{background:transparent;border-style:dashed}
+
+.pager{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px clamp(10px,2vw,20px);background:var(--crema);border-top:1px solid var(--linea)}
+.pager-mid{font-size:14px;color:var(--tinta-2);text-align:center;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ---------- Botones y piezas comunes ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 20px;border-radius:999px;border:2px solid var(--cuero);background:var(--cuero);color:var(--papel);font:700 15px/1.1 var(--fb);cursor:pointer;text-decoration:none}
+.btn:hover:not(:disabled){background:#5a3e27}
+.btn.ghost{background:transparent;color:var(--cuero)}
+.btn.ghost:hover:not(:disabled){background:rgba(107,74,47,.08)}
+.btn.oliva{background:var(--oliva);border-color:var(--oliva)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.linkbtn{background:none;border:0;padding:4px 0;color:var(--dorado-texto);font-weight:700;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.card{background:var(--tarjeta);border:1px solid var(--linea);border-radius:var(--r);box-shadow:var(--sombra);padding:clamp(16px,2.4vw,26px)}
+.grid2{display:grid;gap:clamp(16px,2.4vw,28px);grid-template-columns:minmax(0,1fr)}
+@container (min-width:700px){.grid2{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr)}.grid2.wide-left{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)}}
+.hipo{display:inline-flex;gap:6px;align-items:center;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--azul-claro);color:var(--azul-tinta);border:1px dashed var(--azul-tinta);text-transform:uppercase;letter-spacing:.06em}
+.chip{display:inline-flex;align-items:center;gap:6px;font:600 13px/1 var(--fm);padding:5px 9px;border-radius:8px;background:var(--crema);border:1px solid var(--linea)}
+.fb{border-left:6px solid var(--linea);background:var(--crema);padding:14px 16px;border-radius:0 12px 12px 0;margin-top:14px}
+.fb:empty{display:none}
+.fb.ok{border-color:var(--oliva);background:var(--oliva-claro)}
+.fb.bad{border-color:var(--terracota);background:var(--terracota-claro)}
+.fb.info{border-color:var(--azul-tinta);background:var(--azul-claro)}
+.fb-h{display:flex;gap:8px;align-items:center;margin-bottom:6px;font-weight:700}
+.fb-h svg{flex:none}
+.fb p:last-child{margin-bottom:0}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;padding:12px 14px;border-radius:12px;border:2px solid var(--linea);background:var(--tarjeta);cursor:pointer;display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start}
+.opt:hover:not(:disabled){border-color:var(--cuero)}
+.opt .l{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font:700 14px/1 var(--fm);background:var(--crema);border:1px solid var(--linea)}
+.opt.correcta{border-color:var(--oliva);background:var(--oliva-claro)}
+.opt.correcta .l{background:var(--oliva);color:#fff;border-color:var(--oliva)}
+.opt.erronea{border-color:var(--terracota);background:var(--terracota-claro)}
+.opt.erronea .l{background:var(--terracota);color:#fff;border-color:var(--terracota)}
+.opt:disabled{cursor:default}
+
+/* Modo equipo: marcas [VERIFICAR] */
+body.equipo .vf{background:#FFF2A8;outline:2px dashed #9A6B00;outline-offset:2px}
+body.equipo .vf::after{content:" [VERIFICAR: " attr(data-nota) "]";font:700 12px/1.3 var(--fm);color:#6b4a00}
+.equipo-banner{display:none}
+body.equipo .equipo-banner{display:block;background:#FFF2A8;color:#4d3500;font:700 13px var(--fm);padding:6px 12px;text-align:center;border-bottom:1px dashed #9A6B00}
+
+#aviso{position:fixed;left:50%;bottom:86px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--tinta);color:var(--papel);padding:12px 18px;border-radius:12px;max-width:min(92vw,520px);z-index:120;box-shadow:var(--sombra);transition:.3s;font-size:15px}
+#aviso.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+
+/* ---------- Sección 1: instalador ---------- */
+.story{display:grid;gap:14px}
+.story-ill{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center}
+@container (max-width:420px){.story-ill{grid-template-columns:1fr}.story-ill svg{max-width:150px}}
+.chat{background:var(--azul-claro);border-radius:14px 14px 14px 4px;padding:12px 14px;font-size:15px;position:relative}
+.chat b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--azul-tinta)}
+.win{border-radius:14px;overflow:hidden;border:1px solid #cbbd9f;box-shadow:var(--sombra);background:#fff;display:grid;grid-template-rows:auto 1fr;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;min-height:380px}
+.win-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:linear-gradient(#efe6d3,#e4d8bf);border-bottom:1px solid #d3c4a7;font-size:14px;font-weight:700;color:#3b2c20}
+.win-bar .dots{display:flex;gap:6px}.win-bar .dots i{width:12px;height:12px;border-radius:50%;display:block}
+.win-body{display:grid;grid-template-columns:170px minmax(0,1fr)}
+.win-steps{background:var(--azul-tinta);color:#E7EEF2;padding:18px 14px;font-size:14px}
+.win-steps ol{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.win-steps li{display:flex;gap:8px;align-items:center;opacity:.7}
+.win-steps li::before{content:"";width:10px;height:10px;border-radius:50%;border:2px solid #E7EEF2}
+.win-steps li.on{opacity:1;font-weight:700}.win-steps li.on::before{background:var(--dorado);border-color:var(--dorado)}
+.win-steps li.ok::before{background:#E7EEF2}
+.win-main{padding:20px;display:flex;flex-direction:column;gap:12px;color:#2b2b2b;font-size:15px}
+.win-main h3{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:19px;margin:0;color:#1f1f1f}
+.win-actions{margin-top:auto;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;padding-top:10px;border-top:1px solid #eee}
+.wbtn{min-height:40px;padding:8px 16px;border-radius:8px;border:1px solid #b9b9b9;background:#f4f4f4;cursor:pointer;font:600 14px system-ui,sans-serif;color:#222}
+.wbtn.pri{background:#2F4A5C;color:#fff;border-color:#2F4A5C}
+.wbtn:disabled{opacity:.45;cursor:not-allowed}
+.terms-mini{height:150px;overflow:hidden;position:relative;font-size:13px;border:1px solid #ddd;padding:10px 12px;border-radius:8px;background:#fafafa;color:#3c3c3c;line-height:1.45}
+.terms-mini::after{content:"";position:absolute;inset:auto 0 0 0;height:70px;background:linear-gradient(transparent,#fafafa)}
+.chk{display:flex;gap:10px;align-items:center;font-size:14px;cursor:pointer}
+.chk input{width:20px;height:20px;accent-color:#2F4A5C}
+.stop{display:grid;gap:10px;place-items:start;background:var(--terracota-claro);border:1px solid var(--terracota);border-radius:10px;padding:14px;color:#4a1c10}
+@container (max-width:560px){.win-body{grid-template-columns:1fr}.win-steps{display:none}}
+
+/* ---------- Sección 2: documento ---------- */
+.doc{background:var(--tarjeta);border:1px solid var(--linea);border-radius:var(--r);padding:clamp(18px,3cqi,36px);box-shadow:var(--sombra);position:relative;font-size:.98em;line-height:1.85}
+.doc::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;border-radius:var(--r) var(--r) 0 0;background:linear-gradient(90deg,var(--cuero),var(--dorado),var(--cuero))}
+.doc h3{text-align:center;font-size:clamp(18px,1rem + .5vw,23px);margin:.3em 0 .15em}
+.doc .sub{text-align:center;font-size:13px;color:var(--tinta-2);margin-bottom:1.2em;line-height:1.4}
+.doc p{margin:0 0 .9em}
+.doc .cl{font-weight:700}
+.frag{background:rgba(201,151,58,.18);border-bottom:2px dotted var(--dorado-texto);padding:2px 2px;border-radius:3px;cursor:pointer;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.frag:hover{background:rgba(201,151,58,.32)}
+.frag[aria-pressed="true"]{background:rgba(201,151,58,.5);outline:2px solid var(--dorado-texto);outline-offset:1px}
+.frag.ok{background:var(--oliva-claro);border-bottom:2px solid var(--oliva);cursor:default}
+.frag .tag{display:inline-block;font:700 11px/1 var(--fb);background:var(--oliva);color:#fff;padding:4px 7px;border-radius:999px;margin-left:5px;vertical-align:1px;text-transform:uppercase;letter-spacing:.04em}
+.labels{display:grid;gap:12px;align-content:start}
+@container (min-width:700px){.labels{position:sticky;top:0}}
+.sel-box{background:var(--crema);border-radius:12px;padding:12px 14px;font-size:15px;min-height:64px;border:1px dashed var(--linea)}
+.sel-box q{font-style:italic}
+.cats{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
+.cat{text-align:left;padding:10px 12px;border-radius:12px;border:1.5px solid var(--linea);background:var(--tarjeta);cursor:pointer}
+.cat:hover:not(:disabled){border-color:var(--cuero);background:#fff}
+.cat b{display:block;font-size:15px}
+.cat small{color:var(--tinta-2);font-size:13px;line-height:1.3;display:block}
+.cat:disabled{opacity:.5;cursor:not-allowed}
+.meter{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700}
+.meter .track{flex:1;height:10px;border-radius:6px;background:var(--crema);border:1px solid var(--linea);overflow:hidden}
+.meter .track i{display:block;height:100%;width:0;background:var(--oliva);transition:width .4s}
+
+/* ---------- Sección 3: rueda y calculadora ---------- */
+.wheel-wrap svg{width:100%;max-width:440px;height:auto;display:block;margin:0 auto}
+.sector{cursor:pointer}
+.sector path{transition:fill .25s}
+.sector:focus{outline:none}
+.sector:focus-visible path{stroke:var(--tinta);stroke-width:4}
+.sector text{pointer-events:none;font-family:var(--fb)}
+.wheel-info h3{margin:0 0 8px;font-size:22px}
+.wheel-info ul{padding-left:18px;margin:0 0 .8em}
+.ej{background:var(--crema);border-radius:10px;padding:10px 12px;font-size:15px}
+.calc{margin-top:clamp(18px,3vw,30px)}
+.calc-grid{display:grid;gap:22px;grid-template-columns:minmax(0,1fr)}
+@container (min-width:860px){.calc-grid{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}}
+.rng{display:grid;gap:4px;margin-bottom:14px}
+.rng label{font-weight:700;display:flex;justify-content:space-between;gap:10px}
+.rng output{font:700 16px var(--fm);color:var(--dorado-texto)}
+.rng input{width:100%;accent-color:var(--cuero);height:28px}
+.bars{display:grid;gap:12px}
+.barrow{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px;align-items:center;font-size:14px}
+@container (max-width:480px){.barrow{grid-template-columns:1fr}}
+.bar{height:36px;border-radius:9px;background:var(--crema);position:relative;overflow:hidden;border:1px solid var(--linea)}
+.bar i{position:absolute;inset:0 auto 0 0;width:0;background:var(--azul-tinta);transition:width .55s cubic-bezier(.2,.8,.2,1);border-radius:8px}
+.bar span{position:absolute;left:10px;top:50%;transform:translateY(-50%);font:700 15px var(--fm);color:#fff;mix-blend-mode:normal}
+.bar.sitio i{background:var(--oliva)}
+.bar span.dark{color:var(--tinta)}
+
+/* ---------- Sección 4: pestañas y código ---------- */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:2px solid var(--linea);margin-bottom:18px}
+.tab{display:inline-flex;gap:8px;align-items:center;padding:10px 16px;border:1px solid transparent;border-bottom:0;border-radius:12px 12px 0 0;background:transparent;cursor:pointer;font-weight:700;margin-bottom:-2px}
+.tab[aria-selected="true"]{background:var(--tarjeta);border-color:var(--linea);border-bottom:2px solid var(--tarjeta)}
+.tab .n{font:700 12px var(--fm);background:var(--crema);border-radius:6px;padding:3px 6px}
+.tab.visto .n{background:var(--oliva);color:#fff}
+.code{background:var(--codigo-fondo);color:#F3E9D2;border-radius:12px;overflow:hidden;font:400 14px/1.6 var(--fm);box-shadow:var(--sombra)}
+.code-tab{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#3a312b;padding:8px 12px;font-size:13px;color:#E8D9BE}
+.code-tab .copy{background:transparent;border:1px solid #6b5d50;color:#E8D9BE;border-radius:6px;padding:4px 10px;cursor:pointer;font:600 12px var(--fm)}
+.code pre{margin:0;padding:12px 0;overflow:auto;white-space:normal}
+.code pre code{display:block}
+.ln>span:last-child{white-space:pre}
+.ln{display:grid;grid-template-columns:44px 1fr;min-width:max-content;padding-right:16px}
+.ln .no{color:#9C8E7C;text-align:right;padding-right:12px;user-select:none}
+.ln .mk{width:28px;height:22px;margin-left:8px;border-radius:6px;border:0;background:var(--dorado);color:var(--tinta);font:700 12px var(--fm);cursor:pointer}
+.ln .mk[aria-expanded="true"]{background:#F3E9D2}
+.ln.hl{background:rgba(201,151,58,.18)}
+.tk-k{color:#F0C477}.tk-s{color:#C3D394}.tk-n{color:#F2A88A}.tk-c{color:#B3A491}.tk-p{color:#E8D9BE}
+.note{margin-top:10px}
+.tblwrap{overflow:auto;border:1px solid var(--linea);border-radius:12px;background:var(--tarjeta)}
+.tbl{width:100%;border-collapse:collapse;font-size:14.5px;min-width:620px}
+.tbl caption{caption-side:top;text-align:left;padding:12px 14px 4px;font-weight:700}
+.tbl th,.tbl td{padding:9px 12px;border-bottom:1px solid var(--linea);text-align:left;vertical-align:top}
+.tbl th{background:var(--crema);font-size:13px;text-transform:uppercase;letter-spacing:.05em}
+.tbl tr:last-child td{border-bottom:0}
+.lifecycle{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.lifecycle div{background:var(--crema);border-radius:12px;padding:10px;text-align:center;font-size:14px;border:1px solid var(--linea)}
+.lifecycle div.on{background:var(--cuero);color:var(--papel)}
+.list-check{padding-left:0;list-style:none;display:grid;gap:8px}
+.list-check li{display:grid;grid-template-columns:22px 1fr;gap:8px}
+.list-check li::before{content:"";width:16px;height:16px;margin-top:4px;border-radius:4px;background:var(--dorado)}
+
+/* ---------- Sección 5: actores ---------- */
+.map svg{width:100%;height:auto;display:block}
+.node{cursor:pointer}
+.node:focus{outline:none}
+.node:focus-visible rect.box,.node.sel rect.box{stroke:var(--dorado);stroke-width:4}
+.edge-label{font:700 13px var(--fb);fill:var(--tinta-2);paint-order:stroke;stroke:var(--papel);stroke-width:6px;stroke-linejoin:round}
+.edge{stroke:var(--cuero);stroke-width:2.2;fill:none}
+.edge.anim{stroke-dasharray:6 6;animation:flow 1.4s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-24}}
+.seg-toggle{display:inline-flex;border:2px solid var(--cuero);border-radius:999px;overflow:hidden;margin-bottom:14px;flex-wrap:wrap}
+.seg-toggle button{border:0;background:transparent;padding:10px 16px;cursor:pointer;font-weight:700;min-height:44px;color:var(--cuero)}
+.seg-toggle button[aria-pressed="true"]{background:var(--cuero);color:var(--papel)}
+.actor-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.actor-chips button{border:1.5px solid var(--linea);background:var(--tarjeta);border-radius:999px;padding:8px 14px;cursor:pointer;font-weight:700;font-size:14px;min-height:40px}
+.actor-chips button[aria-pressed="true"]{border-color:var(--dorado);background:#fff6e4}
+.actor-info h3{margin:0 0 4px;font-size:22px}
+.actor-info .rol{display:inline-block;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--dorado-texto);margin-bottom:10px}
+.kv{display:grid;gap:8px;margin-top:10px}
+.kv div{background:var(--crema);border-radius:10px;padding:10px 12px;font-size:15px}
+.kv b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--tinta-2)}
+
+/* ---------- Sección 6: casos ---------- */
+.case-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px;justify-content:space-between;margin-bottom:10px}
+.case-steps{display:flex;gap:6px}
+.case-steps i{width:34px;height:8px;border-radius:5px;background:var(--crema);border:1px solid var(--linea)}
+.case-steps i.on{background:var(--dorado);border-color:var(--dorado)}
+.case-steps i.done{background:var(--oliva);border-color:var(--oliva)}
+.ctx{background:var(--crema);border-radius:12px;padding:14px 16px;margin:10px 0 16px;border-left:5px solid var(--azul-tinta)}
+.q{font-weight:700;font-size:1.06em;margin:0 0 10px}
+.qcount{font:700 13px var(--fm);color:var(--tinta-2)}
+.final{display:grid;gap:18px}
+.score{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.score .big{font:700 clamp(40px,2rem + 2vw,64px)/1 var(--ft);color:var(--oliva)}
+.ideas{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
+@container (min-width:760px){.ideas{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.idea{background:var(--tarjeta);border:1px solid var(--linea);border-radius:var(--r);padding:18px;box-shadow:var(--sombra);position:relative;overflow:hidden}
+.idea .n{position:absolute;right:12px;top:4px;font:700 54px/1 var(--ft);color:rgba(201,151,58,.25)}
+.idea h3{margin:10px 0 6px;font-size:19px}
+.idea p{margin:0;font-size:15px}
+
+/* ---------- Responsivo ---------- */
+@media (max-width:1099px){
+  .layout{grid-template-columns:220px minmax(0,1fr)}
+  .apoyo{position:fixed;top:0;right:0;height:100dvh;width:min(380px,92vw);transform:translateX(105%);transition:transform .3s ease;z-index:80;box-shadow:-20px 0 40px -20px rgba(0,0,0,.4);visibility:hidden}
+  .apoyo.open{transform:none;visibility:visible}
+  #btnApoyo{display:inline-grid}
+  #apoyoClose{display:inline-grid}
+}
+@media (max-width:760px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .secnav{display:none}
+  .kicker{display:none}
+  .back-long{display:none}
+  .apoyo-txt{display:none}
+  #btnApoyo{width:44px;padding:0}
+  .top{gap:8px;flex-wrap:wrap}
+  .brand{order:2;flex-basis:100%}
+  .brand svg{display:none}
+  .segs{margin-left:auto}
+}
+@media (max-width:400px){
+  .seg{width:20px}.seg::before{width:15px}
+  .segs{gap:0}
+  .btn-back{padding:8px 12px}
+  .pager-mid{display:none}
+  .btn{padding:10px 14px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#stage">Saltar al contenido</a>
+<div class="equipo-banner" role="note">MODO EQUIPO: los fragmentos resaltados en amarillo deben verificarse antes de publicar.</div>
+
+<header class="top">
+  <a id="btnBack" class="btn-back" href="#">← <span class="back-long">Volver al cuadernillo</span><span class="sr"> (cierra la pieza interactiva)</span></a>
+  <div class="brand">
+    <svg viewBox="0 0 48 48" width="42" height="42" aria-hidden="true">
+      <circle cx="24" cy="24" r="22" fill="#C9973A"/>
+      <circle cx="24" cy="24" r="18" fill="none" stroke="#FBF6EA" stroke-width="1.5" stroke-dasharray="2 3"/>
+      <g stroke="#2E2118" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M24 13v21M17 34h14M13 18h22" fill="none"/>
+        <path d="M13 18l-4 8h8zM35 18l-4 8h8z" fill="#FBF6EA"/>
+      </g>
+    </svg>
+    <div class="brand-txt">
+      <span class="kicker">OVA · Licenciamiento de software en Colombia</span>
+      <h1>¿Qué es el licenciamiento de software?</h1>
+    </div>
+  </div>
+  <nav class="segs" id="segs" aria-label="Progreso por secciones"></nav>
+  <button class="iconbtn" id="btnSound" type="button" aria-pressed="true" aria-label="Silenciar sonido">
+    <svg id="icoOn" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"/></svg>
+    <svg id="icoOff" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M17 9l5 6M22 9l-5 6"/></svg>
+  </button>
+  <button class="iconbtn" id="btnApoyo" type="button" aria-expanded="false" aria-controls="apoyo">
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 5h16M4 12h16M4 19h10"/></svg><span class="apoyo-txt">Apoyo</span>
+  </button>
+</header>
+
+<div class="layout">
+  <nav class="secnav" aria-label="Secciones de la pieza">
+    <h2>Recorrido</h2>
+    <ol id="navList"></ol>
+    <p class="nav-foot">Usa <kbd>←</kbd> <kbd>→</kbd> para cambiar de sección cuando no estés en un control.</p>
+  </nav>
+
+  <main class="stage" id="stage" tabindex="-1">
+
+<!-- ============ 1. SITUACIÓN ============ -->
+<section class="sec" data-titulo="La situación" data-sub="Ejemplo" aria-labelledby="h-s1">
+  <span class="eyebrow">Paso 1 de 3 · Ejemplo</span>
+  <h2 class="t" id="h-s1" tabindex="-1">«Ya pagamos una licencia»</h2>
+  <p class="lead">Una frase que se oye en cualquier área de TI y que no dice casi nada. Ponte en la situación e intenta instalar el programa.</p>
+  <div class="grid2">
+    <div class="card story">
+      <span class="hipo">Caso hipotético</span>
+      <div class="story-ill">
+        <svg viewBox="0 0 160 170" role="img" aria-labelledby="ill1t ill1d">
+          <title id="ill1t">Practicante frente a su portátil</title>
+          <desc id="ill1d">Ilustración de una persona joven con suéter verde oliva sentada ante un portátil que muestra una ventana de instalación.</desc>
+          <rect x="6" y="120" width="148" height="10" rx="4" fill="#6B4A2F"/>
+          <rect x="22" y="130" width="8" height="34" fill="#6B4A2F"/><rect x="130" y="130" width="8" height="34" fill="#6B4A2F"/>
+          <path d="M44 120c0-26 14-40 36-40s36 14 36 40z" fill="#55622A"/>
+          <circle cx="80" cy="56" r="22" fill="#E7C29C"/>
+          <path d="M58 54c0-16 10-26 23-26 14 0 22 9 22 22-6-6-16-9-26-8-8 1-14 5-19 12z" fill="#3B2A1E"/>
+          <circle cx="72" cy="60" r="2.4" fill="#2E2118"/><circle cx="88" cy="60" r="2.4" fill="#2E2118"/>
+          <path d="M74 70q6 4 12 0" stroke="#2E2118" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <rect x="88" y="88" width="56" height="34" rx="4" fill="#2F4A5C"/>
+          <rect x="92" y="92" width="48" height="24" rx="2" fill="#FBF6EA"/>
+          <rect x="95" y="96" width="14" height="16" fill="#C9973A"/>
+          <rect x="112" y="97" width="24" height="3" fill="#2F4A5C"/><rect x="112" y="103" width="20" height="3" fill="#2F4A5C"/><rect x="112" y="109" width="12" height="3" fill="#2F4A5C"/>
+          <rect x="82" y="120" width="68" height="4" rx="2" fill="#2E2118"/>
+          <circle cx="132" cy="28" r="16" fill="#FFFDF7" stroke="#6B4A2F" stroke-width="2"/>
+          <text x="132" y="35" text-anchor="middle" font-family="Fraunces,Georgia,serif" font-size="22" font-weight="700" fill="#A3462B">?</text>
+        </svg>
+        <div>
+          <p>Eres practicante de TI en una empresa de logística en Bogotá. La coordinadora de analítica te escribe:</p>
+          <div class="chat"><b>Coordinadora</b>«Instala DataForge Studio en los 12 equipos de analítica antes del lunes. Tranquilo, ya pagamos una licencia.»</div>
+        </div>
+      </div>
+      <p style="margin:0"><b>Pregunta para llevar:</b> ¿en cuántos equipos lo puedes instalar? La respuesta está en el acuerdo de licencia, no en el pago.</p>
+    </div>
+    <div>
+      <div class="win" role="region" aria-label="Simulación de un asistente de instalación">
+        <div class="win-bar"><span class="dots" aria-hidden="true"><i style="background:#D86B57"></i><i style="background:#E6B54A"></i><i style="background:#7DA25B"></i></span>Instalar DataForge Studio 5.2</div>
+        <div class="win-body">
+          <div class="win-steps"><ol id="winSteps"><li class="on">Bienvenida</li><li>Acuerdo de licencia</li><li>Ubicación</li><li>Instalación</li></ol></div>
+          <div class="win-main" id="winMain" aria-live="polite"></div>
+        </div>
+      </div>
+      <p style="font-size:13px;color:var(--tinta-2);margin-top:8px">DataForge Studio y Altamira Software S.A.S. son nombres ficticios creados para este OVA.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. ACTIVIDAD ============ -->
+<section class="sec" data-titulo="Descubre las condiciones" data-sub="Actividad" data-actividad="1" aria-labelledby="h-s2" hidden>
+  <span class="eyebrow">Paso 2 de 3 · Actividad</span>
+  <h2 class="t" id="h-s2" tabindex="-1">Seis condiciones escondidas en el acuerdo</h2>
+  <p class="lead">Selecciona cada fragmento resaltado y elige qué pregunta responde. Si te equivocas, te damos una pista.</p>
+  <div class="grid2 wide-left">
+    <article class="doc" aria-labelledby="eulaT">
+      <h3 id="eulaT">Acuerdo de licencia · DataForge Studio 5.2</h3>
+      <p class="sub"><span class="hipo">Caso hipotético</span> Texto ilustrativo que imita la estructura de las licencias comerciales.</p>
+      <p><span class="cl">1. Concesión.</span> Altamira Software S.A.S. («el Licenciante») le concede una licencia no exclusiva e intransferible para usar el software <span class="frag" data-f="f1" role="button" tabindex="0" aria-pressed="false">por un (1) usuario nominal, en un máximo de dos (2) dispositivos</span>.</p>
+      <p><span class="cl">2. Vigencia.</span> La licencia estará vigente <span class="frag" data-f="f2" role="button" tabindex="0" aria-pressed="false">durante el periodo de suscripción pagado (doce meses), renovable automáticamente</span>.</p>
+      <p><span class="cl">3. Ediciones.</span> <span class="frag" data-f="f3" role="button" tabindex="0" aria-pressed="false">La edición Community solo puede usarse con fines académicos; el uso comercial requiere la edición Professional</span>.</p>
+      <p><span class="cl">4. Restricciones.</span> Usted no podrá <span class="frag" data-f="f4" role="button" tabindex="0" aria-pressed="false">descompilar, aplicar ingeniería inversa, alquilar ni sublicenciar el software</span>.</p>
+      <p><span class="cl">5. Terminación.</span> <span class="frag" data-f="f5" role="button" tabindex="0" aria-pressed="false">Si usted incumple estos términos, el Licenciante podrá terminar la licencia y usted deberá eliminar todas las copias</span>.</p>
+      <p><span class="cl">6. Garantía.</span> <span class="frag" data-f="f6" role="button" tabindex="0" aria-pressed="false">El software se entrega «tal cual», sin garantías de ningún tipo</span>.</p>
+      <p><span class="cl">7. Titularidad.</span> Esta licencia no le transfiere la propiedad del software; el Licenciante conserva todos los derechos que no concede expresamente.</p>
+    </article>
+    <div class="labels">
+      <div class="card" style="padding:16px">
+        <div class="meter"><span id="fragCount">0 de 6</span><span class="track" aria-hidden="true"><i id="fragBar"></i></span></div>
+        <p style="margin:12px 0 6px;font-weight:700">Fragmento seleccionado</p>
+        <div class="sel-box" id="selBox">Selecciona un fragmento resaltado del acuerdo.</div>
+        <p style="margin:14px 0 8px;font-weight:700" id="catsLbl">¿Qué pregunta responde?</p>
+        <div class="cats" id="cats" role="group" aria-labelledby="catsLbl"></div>
+        <div class="fb" id="fragFb" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3. CIERRE ============ -->
+<section class="sec" data-titulo="Cierre" data-sub="Ideas clave" aria-labelledby="h-s3" hidden>
+  <span class="eyebrow">Paso 3 de 3 · Cierre</span>
+  <h2 class="t" id="h-s3" tabindex="-1">Ahora sí puedes responderle a la coordinadora</h2>
+  <div class="card" style="margin-bottom:20px">
+    <p style="margin:0">Según la cláusula 1, cada licencia cubre a <b>una persona en hasta dos equipos</b>. Si en analítica trabajan 12 personas, se necesitan <b>12 licencias</b>, no una; si son 6 personas con 2 equipos cada una, bastan 6. Y si el trabajo es para clientes, la edición Community no sirve (cláusula 3).</p>
+    <p id="introScore" style="margin:10px 0 0;color:var(--tinta-2)"></p>
+  </div>
+  <div class="ideas">
+    <div class="idea"><span class="n" aria-hidden="true">1</span><svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true"><circle cx="19" cy="19" r="12" fill="none" stroke="#6B4A2F" stroke-width="4"/><path d="M28 28l10 10" stroke="#C9973A" stroke-width="5" stroke-linecap="round"/></svg><h3>Una licencia responde preguntas</h3><p>Quién, en cuántos equipos, por cuánto tiempo, para qué y qué está prohibido.</p></div>
+    <div class="idea"><span class="n" aria-hidden="true">2</span><svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true"><rect x="5" y="24" width="8" height="15" rx="2" fill="#2F4A5C"/><rect x="18" y="14" width="8" height="25" rx="2" fill="#C9973A"/><rect x="31" y="6" width="8" height="33" rx="2" fill="#55622A"/></svg><h3>La unidad decide la cuenta</h3><p>Por persona, por equipo o por uso simultáneo: «una licencia» puede significar 1, 6 o 12 instalaciones.</p></div>
+    <div class="idea"><span class="n" aria-hidden="true">3</span><svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true"><rect x="8" y="4" width="28" height="36" rx="3" fill="#FFFDF7" stroke="#A3462B" stroke-width="4"/><path d="M14 14h16M14 22h16M14 30h10" stroke="#A3462B" stroke-width="4" stroke-linecap="round"/></svg><h3>Aceptar sin leer obliga igual</h3><p>Leer la licencia antes de instalar es parte del trabajo profesional del ingeniero de sistemas.</p></div>
+  </div>
+  <div id="nextZone" style="margin-top:20px"></div>
+</section>
+
+  </main>
+
+  <aside class="apoyo" id="apoyo" aria-label="Panel de apoyo">
+    <div class="apoyo-head"><h2>Apoyo</h2><button class="iconbtn" id="apoyoClose" type="button" aria-label="Cerrar panel de apoyo">✕</button></div>
+    <div id="apoyoBody"></div>
+  </aside>
+</div>
+
+<footer class="pager">
+  <button class="btn ghost" id="prev" type="button">← Anterior</button>
+  <div class="pager-mid" id="pagerMid" aria-live="polite"></div>
+  <button class="btn" id="next" type="button">Siguiente →</button>
+</footer>
+
+<div id="aviso" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+var $=function(s,c){return (c||document).querySelector(s)}, $$=function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s))};
+var params=new URLSearchParams(location.search);
+function safeUrl(u){if(!u)return null;try{var x=new URL(u,location.href);return /^https?:$/.test(x.protocol)?x.href:null}catch(e){return null}}
+var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+var ICON_OK='<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#55622A"/><path d="M7 12.5l3.2 3.2L17 9" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+var ICON_BAD='<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#A3462B"/><path d="M8 8l8 8M16 8l-8 8" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>';
+var ICON_INFO='<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#2F4A5C"/><path d="M12 11v6M12 7.2v.1" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>';
+
+if(params.get('equipo')==='1')document.body.classList.add('equipo');
+
+/* ---------- Sonido (Web Audio, sin archivos) ---------- */
+var actx=null, muted=store.get('ova-lic-mute')==='1';
+function tone(seq){
+  if(muted)return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    if(actx.state==='suspended')actx.resume();
+    var t=actx.currentTime+0.01;
+    seq.forEach(function(s){
+      var o=actx.createOscillator(),g=actx.createGain();
+      o.type=s[2]||'sine';o.frequency.setValueAtTime(s[0],t);
+      g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(s[3]||0.08,t+0.012);g.gain.exponentialRampToValueAtTime(0.0001,t+s[1]);
+      o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+s[1]+0.03);t+=s[1]*0.8;
+    });
+  }catch(e){}
+}
+var sfx={
+  click:function(){tone([[700,.05,'triangle',.035]])},
+  ok:function(){tone([[523.25,.12,'sine',.08],[659.25,.12,'sine',.08],[783.99,.2,'sine',.08]])},
+  bad:function(){tone([[233,.16,'triangle',.07],[196,.24,'triangle',.07]])}
+};
+var btnSound=$('#btnSound');
+function paintSound(){btnSound.setAttribute('aria-pressed',String(!muted));btnSound.setAttribute('aria-label',muted?'Activar sonido':'Silenciar sonido');btnSound.title=muted?'Sonido desactivado':'Sonido activado';$('#icoOn').style.display=muted?'none':'';$('#icoOff').style.display=muted?'':'none'}
+btnSound.addEventListener('click',function(){muted=!muted;store.set('ova-lic-mute',muted?'1':'0');paintSound();if(!muted)sfx.click()});
+paintSound();
+
+/* ---------- Aviso ---------- */
+function aviso(msg){var a=$('#aviso');a.textContent=msg;a.classList.add('show');clearTimeout(aviso.t);aviso.t=setTimeout(function(){a.classList.remove('show')},4200)}
+
+/* ---------- Volver ---------- */
+var back=safeUrl(params.get('back')), bb=$('#btnBack');
+if(back){bb.href=back;bb.target='_top';bb.rel='noopener'}
+else{
+  bb.addEventListener('click',function(e){e.preventDefault();aviso('Para volver al cuadernillo, cierra esta ventana con la ✕ de la esquina.')});
+  setTimeout(function(){aviso('Cuando termines, cierra esta ventana con la ✕ para volver al cuadernillo.')},900);
+}
+var nextUrl=safeUrl(params.get('next'));
+
+/* ---------- Teclado para elementos role=button no nativos ---------- */
+document.addEventListener('keydown',function(e){
+  var t=e.target;
+  if((e.key==='Enter'||e.key===' ')&&t.getAttribute&&t.getAttribute('role')==='button'&&t.tagName!=='BUTTON'&&t.tagName!=='A'){e.preventDefault();t.dispatchEvent(new MouseEvent('click',{bubbles:true}))}
+});
+
+/* ---------- Retroalimentación ---------- */
+var secs=$$('.sec'), N=secs.length, titles=secs.map(function(s){return s.dataset.titulo});
+function fb(el,kind,titulo,cuerpo,repaso){
+  el.className='fb '+kind+(el.classList.contains('note')?' note':'');
+  var ic=kind==='ok'?ICON_OK:kind==='bad'?ICON_BAD:ICON_INFO;
+  el.innerHTML='<p class="fb-h">'+ic+'<span>'+titulo+'</span></p><div>'+cuerpo+'</div>'+(repaso!=null?'<p style="margin:8px 0 0"><button type="button" class="linkbtn" data-go="'+repaso+'">Repasar: '+titles[repaso]+' →</button></p>':'');
+}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-go]');if(b){go(+b.dataset.go)}});
+
+/* ---------- Navegación ---------- */
+var state={cur:0,visited:{},done:{}};
+var navList=$('#navList'), segs=$('#segs'), stage=$('#stage');
+secs.forEach(function(s,i){
+  var li=document.createElement('li');
+  li.innerHTML='<button type="button" data-i="'+i+'"><span class="num" aria-hidden="true">'+(i+1)+'</span><span class="lbl">'+s.dataset.titulo+'<span class="sub">'+s.dataset.sub+'</span></span><span class="sr st"></span></button>';
+  navList.appendChild(li);
+  var sg=document.createElement('button');sg.type='button';sg.className='seg';sg.dataset.i=i;sg.setAttribute('aria-label','Sección '+(i+1)+': '+s.dataset.titulo);
+  segs.appendChild(sg);
+});
+navList.addEventListener('click',function(e){var b=e.target.closest('button[data-i]');if(b)go(+b.dataset.i)});
+segs.addEventListener('click',function(e){var b=e.target.closest('button[data-i]');if(b)go(+b.dataset.i)});
+$('#prev').addEventListener('click',function(){go(state.cur-1)});
+$('#next').addEventListener('click',function(){
+  if(state.cur<N-1)go(state.cur+1);
+  else if(nextUrl){window.top.location.href=nextUrl}
+});
+
+function paint(){
+  $$('li',navList).forEach(function(li,i){
+    var b=li.firstChild;b.setAttribute('aria-current',i===state.cur?'true':'false');
+    li.classList.toggle('hecho',!!state.done[i]);
+    li.querySelector('.num').textContent=state.done[i]?'✓':(i+1);
+    li.querySelector('.st').textContent=state.done[i]?' (completada)':state.visited[i]?' (visitada)':'';
+  });
+  $$('.seg',segs).forEach(function(s,i){
+    s.classList.toggle('visto',!!state.visited[i]&&!state.done[i]);s.classList.toggle('hecho',!!state.done[i]);
+    if(i===state.cur)s.setAttribute('aria-current','step');else s.removeAttribute('aria-current');
+  });
+  $('#prev').disabled=state.cur===0;
+  var nx=$('#next');
+  if(state.cur<N-1){nx.disabled=false;nx.textContent='Siguiente →'}
+  else{nx.disabled=!nextUrl;nx.textContent=nextUrl?'Continuar →':'Fin de la pieza'}
+  $('#pagerMid').textContent=(state.cur+1)+' / '+N+' · '+titles[state.cur];
+}
+function markDone(i){if(!state.done[i]){state.done[i]=true;paint()}}
+function go(i,opts){
+  opts=opts||{};
+  i=Math.max(0,Math.min(N-1,i));
+  state.cur=i;state.visited[i]=true;
+  if(!secs[i].dataset.actividad)state.done[i]=true;
+  secs.forEach(function(s,k){s.hidden=k!==i});
+  $('#apoyoBody').innerHTML=APOYO[i];
+  stage.scrollTop=0;
+  paint();
+  if(opts.focus!==false){var h=secs[i].querySelector('h2');if(h)h.focus({preventScroll:true})}
+  if(opts.sound!==false)sfx.click();
+}
+document.addEventListener('keydown',function(e){
+  if(e.altKey||e.ctrlKey||e.metaKey)return;
+  var a=document.activeElement, tag=a?a.tagName:'';
+  var free=!a||a===document.body||a===stage||/^H[1-6]$/.test(tag)||(a.classList&&a.classList.contains('sec'));
+  if(!free)return;
+  if(e.key==='ArrowRight'){e.preventDefault();go(state.cur+1)}
+  if(e.key==='ArrowLeft'){e.preventDefault();go(state.cur-1)}
+});
+
+/* Panel de apoyo (cajón en pantallas medianas) */
+var apoyo=$('#apoyo'), btnA=$('#btnApoyo');
+function setApoyo(open){apoyo.classList.toggle('open',open);btnA.setAttribute('aria-expanded',String(open));if(open)$('#apoyoClose').focus();else btnA.focus()}
+btnA.addEventListener('click',function(){setApoyo(!apoyo.classList.contains('open'))});
+$('#apoyoClose').addEventListener('click',function(){setApoyo(false)});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&apoyo.classList.contains('open'))setApoyo(false)});
+
+
+/* ---------- Panel de apoyo ---------- */
+var APOYO=[
+'<div class="blk"><h3>En un proyecto real</h3><p>En las empresas, instalar software suele pasar por el área de TI precisamente para controlar qué licencias se usan, cuántas y por quién.</p></div>'+
+'<div class="blk"><h3>Glosario</h3><dl><dt>EULA</dt><dd><i>End User License Agreement</i>: acuerdo de licencia de usuario final, el texto que aceptas al instalar.</dd></dl></div>'+
+'<div class="blk fuente"><h3>Sobre este caso</h3><p>DataForge Studio, Altamira Software S.A.S. y sus términos son un <b>caso hipotético</b> creado para el OVA.</p></div>',
+'<div class="blk"><h3>Glosario</h3><dl><dt>Usuario nominal</dt><dd>Persona identificada a quien se asigna la licencia.</dd><dt>Intransferible</dt><dd>No puedes ceder la licencia a otra persona.</dd><dt>Sublicenciar</dt><dd>Conceder a terceros permisos derivados de tu licencia.</dd><dt>Ingeniería inversa</dt><dd>Analizar un programa compilado para reconstruir cómo funciona.</dd><dt>«Tal cual»</dt><dd>Sin garantías sobre su funcionamiento.</dd></dl></div>',
+'<div class="blk"><h3>Lo que sigue</h3><p>En la página siguiente, <i>¿Qué es una licencia de software?</i>, verás por qué tener una licencia no significa ser dueño del programa.</p></div>'
+];
+
+/* ---------- Paso 1 · Instalador ---------- */
+var winMain=$('#winMain'), winSteps=$$('#winSteps li');
+function winStep(n){winSteps.forEach(function(li,i){li.classList.toggle('on',i===n);li.classList.toggle('ok',i<n)})}
+var LOGO='<svg width="56" height="56" viewBox="0 0 56 56" aria-hidden="true"><path d="M28 3l22 12.5v25L28 53 6 40.5v-25z" fill="#2F4A5C"/><path d="M28 10l16 9v18l-16 9-16-9V19z" fill="none" stroke="#C9973A" stroke-width="2"/><text x="28" y="34" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="700" font-size="15" fill="#FBF6EA">DF</text></svg>';
+function winWelcome(){
+  winStep(0);
+  winMain.innerHTML='<div style="display:flex;gap:14px;align-items:center">'+LOGO+'<div><h3>Bienvenido a DataForge Studio 5.2</h3><div style="font-size:13px;color:#666">Altamira Software S.A.S. · producto ficticio</div></div></div><p>Este asistente instalará DataForge Studio en su equipo.</p><div class="win-actions"><button class="wbtn" type="button" disabled>Cancelar</button><button class="wbtn pri" type="button" id="wNext">Siguiente</button></div>';
+  $('#wNext').addEventListener('click',function(){sfx.click();winTerms()});
+}
+function winTerms(){
+  winStep(1);
+  winMain.innerHTML='<h3>Acuerdo de licencia</h3><div class="terms-mini" aria-hidden="true"><b>1. Concesión.</b> Altamira Software S.A.S. le concede una licencia no exclusiva e intransferible para usar el software por un (1) usuario nominal, en un máximo de dos (2) dispositivos… <b>2. Vigencia.</b> La licencia estará vigente durante el periodo de suscripción… <b>3. Ediciones.</b> …</div><label class="chk"><input type="checkbox" id="wChk"> Acepto los términos del acuerdo de licencia</label><div class="win-actions"><button class="wbtn" type="button" id="wBack">Atrás</button><button class="wbtn pri" type="button" id="wInst" disabled>Instalar</button></div>';
+  $('#wChk').addEventListener('change',function(e){$('#wInst').disabled=!e.target.checked});
+  $('#wBack').addEventListener('click',function(){sfx.click();winWelcome()});
+  $('#wInst').addEventListener('click',function(){sfx.bad();winStop()});
+}
+function winStop(){
+  winMain.innerHTML='<div class="stop"><strong style="font-size:17px">Un momento.</strong><span>Acabas de aceptar <b>seis condiciones</b> sin leerlas, y tu empresa quedó obligada por ellas. ¿Sabes cuáles son?</span><button type="button" class="btn" data-go="1">Descubrirlas →</button></div><div class="win-actions"><button class="wbtn" type="button" id="wRe">Reiniciar simulación</button></div>';
+  $('#wRe').addEventListener('click',function(){sfx.click();winWelcome()});
+}
+winWelcome();
+
+/* ---------- Paso 2 · Clasificar condiciones ---------- */
+var CATS={
+ alcance:['Alcance','Quién y en cuántos equipos'],
+ plazo:['Plazo','Por cuánto tiempo'],
+ finalidad:['Finalidad de uso','Para qué se puede usar'],
+ prohibidos:['Actos prohibidos','Lo que no puedes hacer con el software'],
+ terminacion:['Terminación','Cuándo se acaba la licencia'],
+ garantia:['Garantía','Qué promete (y qué no) el licenciante']
+};
+var FR={
+ f1:{c:'alcance',why:'Responde <b>quién</b> y <b>en cuántos equipos</b>. «Usuario nominal» es una persona identificada: la licencia no se comparte entre personas, aunque usen el mismo equipo en turnos distintos.',pista:'habla de «un usuario» y de «dos dispositivos»: es una medida.'},
+ f2:{c:'plazo',why:'Responde <b>cuánto tiempo</b>. Es una suscripción: si no se renueva, termina el derecho de uso, aunque el programa siga instalado.',pista:'busca «periodo», «doce meses» y «renovable».'},
+ f3:{c:'finalidad',why:'Responde <b>para qué</b>. La edición gratuita solo sirve para fines académicos: el precio cero no autoriza el uso comercial.',pista:'distingue entre fines académicos y comerciales: habla del propósito.'},
+ f4:{c:'prohibidos',why:'Son <b>actos prohibidos</b>: no puedes hacerle ingeniería inversa al programa ni cederlo a terceros, tampoco ofreciéndolo como servicio.',pista:'aparece después de «usted no podrá».'},
+ f5:{c:'terminacion',why:'Responde <b>cuándo se acaba</b>. Incumplir cualquier otra cláusula activa esta: una falla de alcance o de finalidad puede terminar con la obligación de desinstalar todo.',pista:'habla de «terminar la licencia» y de lo que pasa después.'},
+ f6:{c:'garantia',why:'Limita lo que el licenciante <b>promete</b>. Las licencias propietarias y las libres suelen incluir exenciones parecidas.',pista:'«tal cual» y «sin garantías» se refieren a lo que el licenciante se compromete a responder.'}
+};
+var TOTAL=6, catsEl=$('#cats'), selBox=$('#selBox'), fragFb=$('#fragFb'), sel=null, fragDone={}, tries={}, firstOk=0;
+Object.keys(CATS).forEach(function(k){
+  var b=document.createElement('button');b.type='button';b.className='cat';b.dataset.c=k;b.disabled=true;
+  b.innerHTML='<b>'+CATS[k][0]+'</b><small>'+CATS[k][1]+'</small>';
+  b.addEventListener('click',function(){classify(k)});catsEl.appendChild(b);
+});
+$$('.frag').forEach(function(f){
+  f.addEventListener('click',function(){
+    if(fragDone[f.dataset.f])return;
+    $$('.frag').forEach(function(x){x.setAttribute('aria-pressed','false')});
+    f.setAttribute('aria-pressed','true');sel=f;sfx.click();
+    selBox.innerHTML='<q>'+f.textContent+'</q>';
+    $$('.cat',catsEl).forEach(function(b){b.disabled=false});
+    fragFb.className='fb';fragFb.innerHTML='';
+    if(matchMedia('(max-width:1000px)').matches)catsEl.scrollIntoView({block:'nearest',behavior:'smooth'});
+  });
+});
+function classify(c){
+  if(!sel)return;
+  var id=sel.dataset.f,d=FR[id];tries[id]=tries[id]||0;
+  if(c===d.c){
+    if(tries[id]===0)firstOk++;
+    fragDone[id]=true;sel.classList.add('ok');sel.setAttribute('aria-pressed','false');sel.setAttribute('aria-disabled','true');
+    var tag=document.createElement('span');tag.className='tag';tag.textContent=CATS[c][0];sel.appendChild(tag);
+    sfx.ok();fb(fragFb,'ok','Correcto: '+CATS[c][0],'<p>'+d.why+'</p>');
+    sel=null;selBox.textContent='Selecciona otro fragmento resaltado.';
+    $$('.cat',catsEl).forEach(function(b){b.disabled=true});
+    var n=Object.keys(fragDone).length;$('#fragCount').textContent=n+' de '+TOTAL;$('#fragBar').style.width=(n/TOTAL*100)+'%';
+    if(n===TOTAL){
+      markDone(1);
+      $('#introScore').textContent='Clasificaste '+firstOk+' de '+TOTAL+' condiciones al primer intento.';
+      fb(fragFb,'ok','¡Encontraste las seis!','<p>Acertaste <b>'+firstOk+' de '+TOTAL+'</b> al primer intento.</p><p><button type="button" class="btn" data-go="2">Ver la respuesta para la coordinadora →</button></p>');
+    }
+  }else{
+    tries[id]++;sfx.bad();
+    fb(fragFb,'bad','No es «'+CATS[c][0]+'»','<p>Esa categoría responde a: <i>'+CATS[c][1].toLowerCase()+'</i>. Pista: '+d.pista+'</p>');
+  }
+}
+
+/* ---------- Paso 3 · Cierre ---------- */
+$('#nextZone').innerHTML=nextUrl?'<a class="btn" href="'+nextUrl+'" target="_top">Continuar con la siguiente página →</a>':'<p class="ej">Siguiente en el OVA: <b>¿Qué es una licencia de software?</b> Vuelve al cuadernillo para abrirla.</p>';
+
+/* ---------- Inicio ---------- */
+var open=parseInt(params.get('open'),10);
+go(open>=1&&open<=N?open-1:0,{focus:false,sound:false});
+})();
+</script>
+</body>
+</html>

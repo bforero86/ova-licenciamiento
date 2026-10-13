@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Derechos sobre el software · OVA Licenciamiento de software</title>
+<meta name="description" content="Página Derechos sobre el software: derechos morales y patrimoniales con un ejemplo real y una actividad de clasificación.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fraunces:opsz,wght@9..144,500;9..144,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<!--
+  OVA · Licenciamiento de software en Colombia
+  ova_derechos.html
+  Parámetros: ?back=URL  ?next=URL  ?open=N (1-6)  ?equipo=1 (resalta [VERIFICAR] para revisión)
+-->
+<style>
+:root{
+  --papel:#FBF6EA;--crema:#F3E9D2;--tarjeta:#FFFDF7;--tinta:#2E2118;--tinta-2:#5A4636;
+  --cuero:#6B4A2F;--dorado:#C9973A;--dorado-texto:#7F5A12;--oliva:#55622A;--oliva-claro:#E9EDD6;
+  --terracota:#A3462B;--terracota-claro:#F6E1D8;--azul-tinta:#2F4A5C;--azul-claro:#DFE8EE;
+  --codigo-fondo:#2A2420;--linea:rgba(107,74,47,.24);
+  --r:14px;--sombra:0 1px 0 rgba(46,33,24,.05),0 12px 30px -16px rgba(46,33,24,.5);
+  --ft:"Fraunces",Georgia,"Times New Roman",serif;
+  --fb:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --fm:"JetBrains Mono",ui-monospace,Consolas,"Courier New",monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+html{overflow:hidden}
+body{
+  height:100vh;height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr) auto;overflow:hidden;
+  background:var(--papel);color:var(--tinta);
+  background-image:radial-gradient(circle at 18% 0%,rgba(201,151,58,.10),transparent 42%),radial-gradient(circle at 100% 100%,rgba(85,98,42,.08),transparent 45%);
+  font:400 clamp(16px,.95rem + .2vw,18px)/1.55 var(--fb);
+}
+h1,h2,h3,h4{font-family:var(--ft);line-height:1.15;color:var(--tinta)}
+a{color:var(--dorado-texto)}
+p{margin:0 0 .8em}
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:-9999px;top:8px;z-index:200;background:var(--tinta);color:var(--papel);padding:10px 14px;border-radius:8px}
+.skip:focus{left:8px}
+:focus-visible{outline:3px solid var(--tinta);outline-offset:2px;box-shadow:0 0 0 6px var(--dorado);border-radius:6px}
+button{font:inherit;color:inherit}
+
+/* ---------- Barra superior ---------- */
+.top{display:flex;align-items:center;gap:12px;padding:8px clamp(10px,2vw,20px);background:var(--crema);border-bottom:1px solid var(--linea);min-height:62px;position:relative;z-index:30}
+.btn-back{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:8px 14px;border-radius:999px;background:var(--tinta);color:var(--papel);text-decoration:none;font-weight:700;font-size:15px;white-space:nowrap;cursor:pointer;border:0}
+.btn-back:hover{background:#4a3627}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.brand svg{flex:none}
+.brand-txt{min-width:0}
+.kicker{display:block;font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--dorado-texto);font-weight:700}
+.brand h1{font-size:clamp(17px,1rem + .6vw,24px);margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.segs{display:flex;gap:2px;align-items:center}
+.seg{width:30px;height:30px;padding:0;border:0;background:transparent;cursor:pointer;display:grid;place-items:center}
+.seg::before{content:"";width:24px;height:9px;border-radius:6px;border:1.5px solid var(--cuero);background:transparent}
+.seg.visto::before{background:linear-gradient(90deg,var(--dorado) 50%,transparent 50%)}
+.seg.hecho::before{background:var(--oliva);border-color:var(--oliva)}
+.seg[aria-current="step"]::before{box-shadow:0 0 0 2px var(--papel),0 0 0 4px var(--tinta)}
+.iconbtn{width:44px;height:44px;flex:none;border-radius:12px;border:1px solid var(--linea);background:var(--tarjeta);display:inline-grid;place-items:center;cursor:pointer;color:var(--tinta)}
+.iconbtn:hover{background:#fff}
+#btnApoyo{display:none;width:auto;padding:0 12px;gap:6px;grid-auto-flow:column;font-weight:700;font-size:14px}
+
+/* ---------- Retícula ---------- */
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr) 330px;min-height:0}
+.secnav{background:var(--crema);border-right:1px solid var(--linea);padding:18px 12px;overflow:auto}
+.secnav h2{font-size:13px;font-family:var(--fb);text-transform:uppercase;letter-spacing:.09em;color:var(--tinta-2);margin:0 8px 10px}
+.secnav ol{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.secnav button{width:100%;text-align:left;display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:center;padding:9px 10px;border-radius:12px;border:1px solid transparent;background:transparent;cursor:pointer}
+.secnav button:hover{background:rgba(255,253,247,.6)}
+.secnav .num{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--cuero);font:700 15px/1 var(--ft);background:var(--papel)}
+.secnav .lbl{font-weight:700;font-size:15px;line-height:1.25}
+.secnav .sub{display:block;font-weight:400;font-size:13px;color:var(--tinta-2)}
+.secnav button[aria-current="true"]{background:var(--tarjeta);border-color:var(--linea);box-shadow:var(--sombra)}
+.secnav button[aria-current="true"] .num{background:var(--dorado);border-color:var(--dorado)}
+.secnav li.hecho .num{background:var(--oliva);border-color:var(--oliva);color:#fff}
+.nav-foot{margin:18px 8px 0;font-size:13px;color:var(--tinta-2);border-top:1px dashed var(--linea);padding-top:12px}
+
+.stage{overflow:auto;padding:clamp(18px,3vw,40px) clamp(16px,3.5vw,52px) 40px;container-type:inline-size;position:relative;outline:none}
+.sec{max-width:1240px;margin:0 auto;animation:entra .45s ease both}
+@keyframes entra{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--dorado-texto)}
+.eyebrow::before{content:"";width:22px;height:2px;background:var(--dorado)}
+h2.t{font-weight:700;font-size:clamp(27px,1.1rem + 1.7vw,44px);margin:.2em 0 .3em;outline:none}
+.lead{font-size:1.07em;color:var(--tinta-2);max-width:72ch;margin:0 0 1.4em}
+
+.apoyo{background:var(--crema);border-left:1px solid var(--linea);padding:18px 16px;overflow:auto}
+.apoyo-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.apoyo-head h2{font-size:13px;font-family:var(--fb);text-transform:uppercase;letter-spacing:.09em;color:var(--tinta-2);margin:0}
+#apoyoClose{display:none}
+.blk{background:var(--tarjeta);border:1px solid var(--linea);border-radius:12px;padding:14px 15px;margin-bottom:12px;font-size:15px}
+.blk h3{font-size:17px;margin:0 0 8px;display:flex;gap:8px;align-items:center}
+.blk dl{margin:0}.blk dt{font-weight:700;margin-top:8px}.blk dd{margin:2px 0 0}
+.blk ul{margin:0;padding-left:18px}
+.blk.fuente{background:transparent;border-style:dashed}
+
+.pager{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px clamp(10px,2vw,20px);background:var(--crema);border-top:1px solid var(--linea)}
+.pager-mid{font-size:14px;color:var(--tinta-2);text-align:center;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ---------- Botones y piezas comunes ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 20px;border-radius:999px;border:2px solid var(--cuero);background:var(--cuero);color:var(--papel);font:700 15px/1.1 var(--fb);cursor:pointer;text-decoration:none}
+.btn:hover:not(:disabled){background:#5a3e27}
+.btn.ghost{background:transparent;color:var(--cuero)}
+.btn.ghost:hover:not(:disabled){background:rgba(107,74,47,.08)}
+.btn.oliva{background:var(--oliva);border-color:var(--oliva)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.linkbtn{background:none;border:0;padding:4px 0;color:var(--dorado-texto);font-weight:700;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.card{background:var(--tarjeta);border:1px solid var(--linea);border-radius:var(--r);box-shadow:var(--sombra);padding:clamp(16px,2.4vw,26px)}
+.grid2{display:grid;gap:clamp(16px,2.4vw,28px);grid-template-columns:minmax(0,1fr)}
+@container (min-width:700px){.grid2{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr)}.grid2.wide-left{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)}}
+.hipo{display:inline-flex;gap:6px;align-items:center;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--azul-claro);color:var(--azul-tinta);border:1px dashed var(--azul-tinta);text-transform:uppercase;letter-spacing:.06em}
+.chip{display:inline-flex;align-items:center;gap:6px;font:600 13px/1 var(--fm);padding:5px 9px;border-radius:8px;background:var(--crema);border:1px solid var(--linea)}
+.fb{border-left:6px solid var(--linea);background:var(--crema);padding:14px 16px;border-radius:0 12px 12px 0;margin-top:14px}
+.fb:empty{display:none}
+.fb.ok{border-color:var(--oliva);background:var(--oliva-claro)}
+.fb.bad{border-color:var(--terracota);background:var(--terracota-claro)}
+.fb.info{border-color:var(--azul-tinta);background:var(--azul-claro)}
+.fb-h{display:flex;gap:8px;align-items:center;margin-bottom:6px;font-weight:700}
+.fb-h svg{flex:none}
+.fb p:last-child{margin-bottom:0}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;padding:12px 14px;border-radius:12px;border:2px solid var(--linea);background:var(--tarjeta);cursor:pointer;display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start}
+.opt:hover:not(:disabled){border-color:var(--cuero)}
+.opt .l{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font:700 14px/1 var(--fm);background:var(--crema);border:1px solid var(--linea)}
+.opt.correcta{border-color:var(--oliva);background:var(--oliva-claro)}
+.opt.correcta .l{background:var(--oliva);color:#fff;border-color:var(--oliva)}
+.opt.erronea{border-color:var(--terracota);background:var(--terracota-claro)}
+.opt.erronea .l{background:var(--terracota);color:#fff;border-color:var(--terracota)}
+.opt:disabled{cursor:default}
+
+/* Modo equipo: marcas [VERIFICAR] */
+body.equipo .vf{background:#FFF2A8;outline:2px dashed #9A6B00;outline-offset:2px}
+body.equipo .vf::after{content:" [VERIFICAR: " attr(data-nota) "]";font:700 12px/1.3 var(--fm);color:#6b4a00}
+.equipo-banner{display:none}
+body.equipo .equipo-banner{display:block;background:#FFF2A8;color:#4d3500;font:700 13px var(--fm);padding:6px 12px;text-align:center;border-bottom:1px dashed #9A6B00}
+
+#aviso{position:fixed;left:50%;bottom:86px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--tinta);color:var(--papel);padding:12px 18px;border-radius:12px;max-width:min(92vw,520px);z-index:120;box-shadow:var(--sombra);transition:.3s;font-size:15px}
+#aviso.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+
+/* ---------- Sección 1: instalador ---------- */
+.story{display:grid;gap:14px}
+.story-ill{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center}
+@container (max-width:420px){.story-ill{grid-template-columns:1fr}.story-ill svg{max-width:150px}}
+.chat{background:var(--azul-claro);border-radius:14px 14px 14px 4px;padding:12px 14px;font-size:15px;position:relative}
+.chat b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--azul-tinta)}
+.win{border-radius:14px;overflow:hidden;border:1px solid #cbbd9f;box-shadow:var(--sombra);background:#fff;display:grid;grid-template-rows:auto 1fr;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;min-height:380px}
+.win-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:linear-gradient(#efe6d3,#e4d8bf);border-bottom:1px solid #d3c4a7;font-size:14px;font-weight:700;color:#3b2c20}
+.win-bar .dots{display:flex;gap:6px}.win-bar .dots i{width:12px;height:12px;border-radius:50%;display:block}
+.win-body{display:grid;grid-template-columns:170px minmax(0,1fr)}
+.win-steps{background:var(--azul-tinta);color:#E7EEF2;padding:18px 14px;font-size:14px}
+.win-steps ol{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.win-steps li{display:flex;gap:8px;align-items:center;opacity:.7}
+.win-steps li::before{content:"";width:10px;height:10px;border-radius:50%;border:2px solid #E7EEF2}
+.win-steps li.on{opacity:1;font-weight:700}.win-steps li.on::before{background:var(--dorado);border-color:var(--dorado)}
+.win-steps li.ok::before{background:#E7EEF2}
+.win-main{padding:20px;display:flex;flex-direction:column;gap:12px;color:#2b2b2b;font-size:15px}
+.win-main h3{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:19px;margin:0;color:#1f1f1f}
+.win-actions{margin-top:auto;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;padding-top:10px;border-top:1px solid #eee}
+.wbtn{min-height:40px;padding:8px 16px;border-radius:8px;border:1px solid #b9b9b9;background:#f4f4f4;cursor:pointer;font:600 14px system-ui,sans-serif;color:#222}
+.wbtn.pri{background:#2F4A5C;color:#fff;border-color:#2F4A5C}
+.wbtn:disabled{opacity:.45;cursor:not-allowed}
+.terms-mini{height:150px;overflow:hidden;position:relative;font-size:13px;border:1px solid #ddd;padding:10px 12px;border-radius:8px;background:#fafafa;color:#3c3c3c;line-height:1.45}
+.terms-mini::after{content:"";position:absolute;inset:auto 0 0 0;height:70px;background:linear-gradient(transparent,#fafafa)}
+.chk{display:flex;gap:10px;align-items:center;font-size:14px;cursor:pointer}
+.chk input{width:20px;height:20px;accent-color:#2F4A5C}
+.stop{display:grid;gap:10px;place-items:start;background:var(--terracota-claro);border:1px solid var(--terracota);border-radius:10px;padding:14px;color:#4a1c10}
+@container (max-width:560px){.win-body{grid-template-columns:1fr}.win-steps{display:none}}
+
+/* ---------- Sección 2: documento ---------- */
+.doc{background:var(--tarjeta);border:1px solid var(--linea);border-radius:var(--r);padding:clamp(18px,3cqi,36px);box-shadow:var(--sombra);position:relative;font-size:.98em;line-height:1.85}
+.doc::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;border-radius:var(--r) var(--r) 0 0;background:linear-gradient(90deg,var(--cuero),var(--dorado),var(--cuero))}
+.doc h3{text-align:center;font-size:clamp(18px,1rem + .5vw,23px);margin:.3em 0 .15em}
+.doc .sub{text-align:center;font-size:13px;color:var(--tinta-2);margin-bottom:1.2em;line-height:1.4}
+.doc p{margin:0 0 .9em}
+.doc .cl{font-weight:700}
+.frag{background:rgba(201,151,58,.18);border-bottom:2px dotted var(--dorado-texto);padding:2px 2px;border-radius:3px;cursor:pointer;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.frag:hover{background:rgba(201,151,58,.32)}
+.frag[aria-pressed="true"]{background:rgba(201,151,58,.5);outline:2px solid var(--dorado-texto);outline-offset:1px}
+.frag.ok{background:var(--oliva-claro);border-bottom:2px solid var(--oliva);cursor:default}
+.frag .tag{display:inline-block;font:700 11px/1 var(--fb);background:var(--oliva);color:#fff;padding:4px 7px;border-radius:999px;margin-left:5px;vertical-align:1px;text-transform:uppercase;letter-spacing:.04em}
+.labels{display:grid;gap:12px;align-content:start}
+@container (min-width:700px){.labels{position:sticky;top:0}}
+.sel-box{background:var(--crema);border-radius:12px;padding:12px 14px;font-size:15px;min-height:64px;border:1px dashed var(--linea)}
+.sel-box q{font-style:italic}
+.cats{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
+.cat{text-align:left;padding:10px 12px;border-radius:12px;border:1.5px solid var(--linea);background:var(--tarjeta);cursor:pointer}
+.cat:hover:not(:disabled){border-color:var(--cuero);background:#fff}
+.cat b{display:block;font-size:15px}
+.cat small{color:var(--tinta-2);font-size:13px;line-height:1.3;display:block}
+.cat:disabled{opacity:.5;cursor:not-allowed}
+.meter{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700}
+.meter .track{flex:1;height:10px;border-radius:6px;background:var(--crema);border:1px solid var(--linea);overflow:hidden}
+.meter .track i{display:block;height:100%;width:0;background:var(--oliva);transition:width .4s}
+
+/* ---------- Sección 3: rueda y calculadora ---------- */
+.wheel-wrap svg{width:100%;max-width:440px;height:auto;display:block;margin:0 auto}
+.sector{cursor:pointer}
+.sector path{transition:fill .25s}
+.sector:focus{outline:none}
+.sector:focus-visible path{stroke:var(--tinta);stroke-width:4}
+.sector text{pointer-events:none;font-family:var(--fb)}
+.wheel-info h3{margin:0 0 8px;font-size:22px}
+.wheel-info ul{padding-left:18px;margin:0 0 .8em}
+.ej{background:var(--crema);border-radius:10px;padding:10px 12px;font-size:15px}
+.calc{margin-top:clamp(18px,3vw,30px)}
+.calc-grid{display:grid;gap:22px;grid-template-columns:minmax(0,1fr)}
+@container (min-width:860px){.calc-grid{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}}
+.rng{display:grid;gap:4px;margin-bottom:14px}
+.rng label{font-weight:700;display:flex;justify-content:space-between;gap:10px}
+.rng output{font:700 16px var(--fm);color:var(--dorado-texto)}
+.rng input{width:100%;accent-color:var(--cuero);height:28px}
+.bars{display:grid;gap:12px}
+.barrow{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px;align-items:center;font-size:14px}
+@container (max-width:480px){.barrow{grid-template-columns:1fr}}
+.bar{height:36px;border-radius:9px;background:var(--crema);position:relative;overflow:hidden;border:1px solid var(--linea)}
+.bar i{position:absolute;inset:0 auto 0 0;width:0;background:var(--azul-tinta);transition:width .55s cubic-bezier(.2,.8,.2,1);border-radius:8px}
+.bar span{position:absolute;left:10px;top:50%;transform:translateY(-50%);font:700 15px var(--fm);color:#fff;mix-blend-mode:normal}
+.bar.sitio i{background:var(--oliva)}
+.bar span.dark{color:var(--tinta)}
+
+/* ---------- Sección 4: pestañas y código ---------- */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:2px solid var(--linea);margin-bottom:18px}
+.tab{display:inline-flex;gap:8px;align-items:center;padding:10px 16px;border:1px solid transparent;border-bottom:0;border-radius:12px 12px 0 0;background:transparent;cursor:pointer;font-weight:700;margin-bottom:-2px}
+.tab[aria-selected="true"]{background:var(--tarjeta);border-color:var(--linea);border-bottom:2px solid var(--tarjeta)}
+.tab .n{font:700 12px var(--fm);background:var(--crema);border-radius:6px;padding:3px 6px}
+.tab.visto .n{background:var(--oliva);color:#fff}
+.code{background:var(--codigo-fondo);color:#F3E9D2;border-radius:12px;overflow:hidden;font:400 14px/1.6 var(--fm);box-shadow:var(--sombra)}
+.code-tab{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#3a312b;padding:8px 12px;font-size:13px;color:#E8D9BE}
+.code-tab .copy{background:transparent;border:1px solid #6b5d50;color:#E8D9BE;border-radius:6px;padding:4px 10px;cursor:pointer;font:600 12px var(--fm)}
+.code pre{margin:0;padding:12px 0;overflow:auto;white-space:normal}
+.code pre code{display:block}
+.ln>span:last-child{white-space:pre}
+.ln{display:grid;grid-template-columns:44px 1fr;min-width:max-content;padding-right:16px}
+.ln .no{color:#9C8E7C;text-align:right;padding-right:12px;user-select:none}
+.ln .mk{width:28px;height:22px;margin-left:8px;border-radius:6px;border:0;background:var(--dorado);color:var(--tinta);font:700 12px var(--fm);cursor:pointer}
+.ln .mk[aria-expanded="true"]{background:#F3E9D2}
+.ln.hl{background:rgba(201,151,58,.18)}
+.tk-k{color:#F0C477}.tk-s{color:#C3D394}.tk-n{color:#F2A88A}.tk-c{color:#B3A491}.tk-p{color:#E8D9BE}
+.note{margin-top:10px}
+.tblwrap{overflow:auto;border:1px solid var(--linea);border-radius:12px;background:var(--tarjeta)}
+.tbl{width:100%;border-collapse:collapse;font-size:14.5px;min-width:620px}
+.tbl caption{caption-side:top;text-align:left;padding:12px 14px 4px;font-weight:700}
+.tbl th,.tbl td{padding:9px 12px;border-bottom:1px solid var(--linea);text-align:left;vertical-align:top}
+.tbl th{background:var(--crema);font-size:13px;text-transform:uppercase;letter-spacing:.05em}
+.tbl tr:last-child td{border-bottom:0}
+.lifecycle{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.lifecycle div{background:var(--crema);border-radius:12px;padding:10px;text-align:center;font-size:14px;border:1px solid var(--linea)}
+.lifecycle div.on{background:var(--cuero);color:var(--papel)}
+.list-check{padding-left:0;list-style:none;display:grid;gap:8px}
+.list-check li{display:grid;grid-template-columns:22px 1fr;gap:8px}
+.list-check li::before{content:"";width:16px;height:16px;margin-top:4px;border-radius:4px;background:var(--dorado)}
+
+/* ---------- Sección 5: actores ---------- */
+.map svg{width:100%;height:auto;display:block}
+.node{cursor:pointer}
+.node:focus{outline:none}
+.node:focus-visible rect.box,.node.sel rect.box{stroke:var(--dorado);stroke-width:4}
+.edge-label{font:700 13px var(--fb);fill:var(--tinta-2);paint-order:stroke;stroke:var(--papel);stroke-width:6px;stroke-linejoin:round}
+.edge{stroke:var(--cuero);stroke-width:2.2;fill:none}
+.edge.anim{stroke-dasharray:6 6;animation:flow 1.4s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-24}}
+.seg-toggle{display:inline-flex;border:2px solid var(--cuero);border-radius:999px;overflow:hidden;margin-bottom:14px;flex-wrap:wrap}
+.seg-toggle button{border:0;background:transparent;padding:10px 16px;cursor:pointer;font-weight:700;min-height:44px;color:var(--cuero)}
+.seg-toggle button[aria-pressed="true"]{background:var(--cuero);color:var(--papel)}
+.actor-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.actor-chips button{border:1.5px solid var(--linea);background:var(--tarjeta);border-radius:999px;padding:8px 14px;cursor:pointer;font-weight:700;font-size:14px;min-height:40px}
+.actor-chips button[aria-pressed="true"]{border-color:var(--dorado);background:#fff6e4}
+.actor-info h3{margin:0 0 4px;font-size:22px}
+.actor-info .rol{display:inline-block;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--dorado-texto);margin-bottom:10px}
+.kv{display:grid;gap:8px;margin-top:10px}
+.kv div{background:var(--crema);border-radius:10px;padding:10px 12px;font-size:15px}
+.kv b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--tinta-2)}
+
+/* ---------- Sección 6: casos ---------- */
+.case-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px;justify-content:space-between;margin-bottom:10px}
+.case-steps{display:flex;gap:6px}
+.case-steps i{width:34px;height:8px;border-radius:5px;background:var(--crema);border:1px solid var(--linea)}
+.case-steps i.on{background:var(--dorado);border-color:var(--dorado)}
+.case-steps i.done{background:var(--oliva);border-color:var(--oliva)}
+.ctx{background:var(--crema);border-radius:12px;padding:14px 16px;margin:10px 0 16px;border-left:5px solid var(--azul-tinta)}
+.q{font-weight:700;font-size:1.06em;margin:0 0 10px}
+.qcount{font:700 13px var(--fm);color:var(--tinta-2)}
+.final{display:grid;gap:18px}
+.score{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.score .big{font:700 clamp(40px,2rem + 2vw,64px)/1 var(--ft);color:var(--oliva)}
+.ideas{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
+@container (min-width:760px){.ideas{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.idea{background:var(--tarjeta);border:1px solid var(--linea);border-radius:var(--r);padding:18px;box-shadow:var(--sombra);position:relative;overflow:hidden}
+.idea .n{position:absolute;right:12px;top:4px;font:700 54px/1 var(--ft);color:rgba(201,151,58,.25)}
+.idea h3{margin:10px 0 6px;font-size:19px}
+.idea p{margin:0;font-size:15px}
+
+/* ---------- Responsivo ---------- */
+@media (max-width:1099px){
+  .layout{grid-template-columns:220px minmax(0,1fr)}
+  .apoyo{position:fixed;top:0;right:0;height:100dvh;width:min(380px,92vw);transform:translateX(105%);transition:transform .3s ease;z-index:80;box-shadow:-20px 0 40px -20px rgba(0,0,0,.4);visibility:hidden}
+  .apoyo.open{transform:none;visibility:visible}
+  #btnApoyo{display:inline-grid}
+  #apoyoClose{display:inline-grid}
+}
+@media (max-width:760px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .secnav{display:none}
+  .kicker{display:none}
+  .back-long{display:none}
+  .apoyo-txt{display:none}
+  #btnApoyo{width:44px;padding:0}
+  .top{gap:8px;flex-wrap:wrap}
+  .brand{order:2;flex-basis:100%}
+  .brand svg{display:none}
+  .segs{margin-left:auto}
+}
+@media (max-width:400px){
+  .seg{width:20px}.seg::before{width:15px}
+  .segs{gap:0}
+  .btn-back{padding:8px 12px}
+  .pager-mid{display:none}
+  .btn{padding:10px 14px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+
+.dash{stroke-dasharray:8 7;animation:flow 1.1s linear infinite}
+.dnd-pool{display:flex;flex-wrap:wrap;gap:10px;min-height:20px;margin-bottom:16px}
+.dcard{display:inline-flex;align-items:center;gap:10px;text-align:left;max-width:360px;padding:11px 14px;border-radius:12px;border:2px solid var(--linea);background:var(--tarjeta);box-shadow:var(--sombra);cursor:grab;font-size:15px;line-height:1.35;touch-action:manipulation}
+.dcard::before{content:"";flex:none;width:8px;height:28px;border-radius:4px;background:repeating-linear-gradient(var(--linea) 0 3px,transparent 3px 6px)}
+.dcard:hover{border-color:var(--cuero)}
+.dcard[aria-pressed="true"]{border-color:var(--dorado);background:#fff6e4;box-shadow:0 0 0 3px rgba(201,151,58,.35)}
+.dcard.dragging{opacity:.5}
+.dcard.placed{cursor:default;box-shadow:none;max-width:none;width:100%}
+.dcard.placed::before{display:none}
+.dcard.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.zones{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+@container (min-width:620px){.zones{grid-template-columns:1fr 1fr}}
+.zone{border:2.5px dashed var(--linea);border-radius:16px;padding:14px;min-height:170px;transition:background .2s,border-color .2s;cursor:pointer}
+.zone h3{margin:0;font-size:20px}
+.zone .zsub{margin:0 0 10px;font-size:13.5px;color:var(--tinta-2)}
+.zone .zlist{display:grid;gap:8px}
+.zone.moral{background:#FBEFD6;border-color:#C9973A}
+.zone.patr{background:#DFE8EE;border-color:#2F4A5C}
+.zone.over,.zone.armed{border-style:solid;box-shadow:0 0 0 4px rgba(201,151,58,.3)}
+.zone.moral .dcard.placed{border-color:#C9973A}
+.zone.patr .dcard.placed{border-color:#2F4A5C}
+</style>
+</head>
+<body>
+<a class="skip" href="#stage">Saltar al contenido</a>
+<div class="equipo-banner" role="note">MODO EQUIPO: los fragmentos resaltados en amarillo deben verificarse antes de publicar.</div>
+
+<header class="top">
+  <a id="btnBack" class="btn-back" href="#">← <span class="back-long">Volver al cuadernillo</span><span class="sr"> (cierra la pieza interactiva)</span></a>
+  <div class="brand">
+    <svg viewBox="0 0 48 48" width="42" height="42" aria-hidden="true">
+      <circle cx="24" cy="24" r="22" fill="#C9973A"/>
+      <circle cx="24" cy="24" r="18" fill="none" stroke="#FBF6EA" stroke-width="1.5" stroke-dasharray="2 3"/>
+      <g stroke="#2E2118" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M24 13v21M17 34h14M13 18h22" fill="none"/>
+        <path d="M13 18l-4 8h8zM35 18l-4 8h8z" fill="#FBF6EA"/>
+      </g>
+    </svg>
+    <div class="brand-txt">
+      <span class="kicker">OVA · Licenciamiento de software en Colombia</span>
+      <h1>Derechos sobre el software</h1>
+    </div>
+  </div>
+  <nav class="segs" id="segs" aria-label="Progreso por secciones"></nav>
+  <button class="iconbtn" id="btnSound" type="button" aria-pressed="true" aria-label="Silenciar sonido">
+    <svg id="icoOn" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"/></svg>
+    <svg id="icoOff" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M17 9l5 6M22 9l-5 6"/></svg>
+  </button>
+  <button class="iconbtn" id="btnApoyo" type="button" aria-expanded="false" aria-controls="apoyo">
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 5h16M4 12h16M4 19h10"/></svg><span class="apoyo-txt">Apoyo</span>
+  </button>
+</header>
+
+<div class="layout">
+  <nav class="secnav" aria-label="Secciones de la pieza">
+    <h2>Recorrido</h2>
+    <ol id="navList"></ol>
+    <p class="nav-foot">Usa <kbd>←</kbd> <kbd>→</kbd> para cambiar de sección cuando no estés en un control.</p>
+  </nav>
+
+  <main class="stage" id="stage" tabindex="-1">
+
+<!-- ============ 1. EJEMPLO ============ -->
+<section class="sec" data-titulo="El ejemplo" data-sub="Autor → obra → derechos" aria-labelledby="h-s1">
+  <span class="eyebrow">Paso 1 de 2 · Ejemplo</span>
+  <h2 class="t" id="h-s1" tabindex="-1">Tu código de grado apareció en otro repositorio</h2>
+  <p class="lead">Lo encuentras publicado por un desconocido, <b>sin tu nombre</b>, y además lo está <b>vendiendo</b>. Son dos problemas distintos, porque afectan dos tipos de derechos distintos. <span class="hipo">Caso hipotético</span></p>
+  <div class="card">
+    <svg viewBox="0 0 780 270" role="img" aria-labelledby="dT dD" style="width:100%;height:auto;display:block">
+      <title id="dT">Flujo autor, obra y derechos</title>
+      <desc id="dD">El autor crea una obra, el programa, que queda protegida por el derecho de autor. De ella salen dos ramas: los derechos morales, ligados a la persona del autor, y los derechos patrimoniales, ligados a la explotación económica.</desc>
+      <g font-family="Atkinson Hyperlegible,sans-serif">
+        <rect x="10" y="95" width="150" height="80" rx="16" fill="#FFFDF7" stroke="#6B4A2F" stroke-width="2.5"/>
+        <circle cx="48" cy="135" r="20" fill="#55622A"/><circle cx="48" cy="129" r="7" fill="#FBF6EA"/><path d="M36 148c2-7 6-9 12-9s10 2 12 9" fill="#FBF6EA"/>
+        <text x="76" y="131" font-weight="700" font-size="18" fill="#2E2118">Autor</text><text x="76" y="151" font-size="13" fill="#5A4636">tú</text>
+        <path class="dash" d="M164 135H232" stroke="#6B4A2F" stroke-width="4" fill="none"/><path d="M230 126l12 9-12 9z" fill="#6B4A2F"/>
+        <text x="200" y="120" text-anchor="middle" font-size="12.5" font-weight="700" fill="#7F5A12">crea</text>
+        <rect x="248" y="80" width="190" height="110" rx="10" fill="#2A2420"/>
+        <text x="264" y="108" font-family="JetBrains Mono,monospace" font-size="12" fill="#F0C477">def ruta_optima(</text>
+        <text x="264" y="128" font-family="JetBrains Mono,monospace" font-size="12" fill="#C3D394">  grafo, origen):</text>
+        <text x="264" y="148" font-family="JetBrains Mono,monospace" font-size="12" fill="#E8D9BE">  ...</text>
+        <text x="343" y="178" text-anchor="middle" font-weight="700" font-size="14" fill="#FBF6EA">Obra: el programa</text>
+        <path class="dash" d="M442 120C500 120 500 60 548 60" stroke="#C9973A" stroke-width="4" fill="none"/><path d="M546 51l12 9-12 9z" fill="#C9973A"/>
+        <path class="dash" d="M442 150C500 150 500 210 548 210" stroke="#2F4A5C" stroke-width="4" fill="none"/><path d="M546 201l12 9-12 9z" fill="#2F4A5C"/>
+        <text x="470" y="140" font-size="12" font-weight="700" fill="#5A4636">derecho de autor</text>
+        <rect x="560" y="18" width="214" height="88" rx="14" fill="#FBEFD6" stroke="#C9973A" stroke-width="2.5"/>
+        <text x="574" y="46" font-weight="700" font-size="17" fill="#2E2118">Derechos morales</text>
+        <text x="574" y="68" font-size="13" fill="#5A4636">Vínculo autor–obra:</text>
+        <text x="574" y="88" font-size="13" fill="#5A4636">ser reconocido como autor</text>
+        <rect x="560" y="164" width="214" height="88" rx="14" fill="#DFE8EE" stroke="#2F4A5C" stroke-width="2.5"/>
+        <text x="574" y="192" font-weight="700" font-size="15.5" fill="#2E2118">Derechos patrimoniales</text>
+        <text x="574" y="214" font-size="13" fill="#5A4636">Explotación económica:</text>
+        <text x="574" y="234" font-size="13" fill="#5A4636">copiar, vender, licenciar</text>
+      </g>
+    </svg>
+  </div>
+  <div class="grid2" style="margin-top:20px">
+    <div>
+      <div class="code" id="codeHdr">
+        <div class="code-tab"><span>src/rutas.py · encabezado del archivo</span></div>
+        <pre><code>
+<div class="ln"><span class="no">1</span><span><span class="tk-c"># SPDX-FileCopyrightText: 2026 Tu Nombre</span></span></div>
+<div class="ln"><span class="no">2</span><span><span class="tk-c"># SPDX-License-Identifier: MIT</span></span></div>
+<div class="ln"><span class="no">3</span><span> </span></div>
+<div class="ln"><span class="no">4</span><span><span class="tk-k">def</span> ruta_optima(grafo, origen):</span></div>
+</code></pre>
+      </div>
+    </div>
+    <div class="card" style="padding:16px 18px">
+      <p style="margin:0 0 8px"><b>Así se ven los dos derechos en un proyecto real:</b></p>
+      <p style="margin:0 0 8px"><span class="chip" style="background:#FBEFD6">Línea 1</span> dice <b>quién es el autor</b>. Borrarla atenta contra el reconocimiento de la autoría: <b>derecho moral</b>.</p>
+      <p style="margin:0"><span class="chip" style="background:#DFE8EE">Línea 2</span> dice <b>bajo qué licencia se puede explotar</b> el código: el autor usa sus <b>derechos patrimoniales</b> para autorizar a otros.</p>
+      <p style="font-size:13px;color:var(--tinta-2);margin:10px 0 0" class="vf" data-nota="Confirmar formato de encabezados en la especificación REUSE (reuse.software) y SPDX">Formato de encabezado según las convenciones SPDX usadas por la especificación REUSE.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. ACTIVIDAD + CIERRE ============ -->
+<section class="sec" data-titulo="Clasifica y cierra" data-sub="Actividad e ideas clave" data-actividad="1" aria-labelledby="h-s2" hidden>
+  <span class="eyebrow">Paso 2 de 2 · Actividad</span>
+  <h2 class="t" id="h-s2" tabindex="-1">¿Moral o patrimonial?</h2>
+  <p class="lead">Arrastra cada situación a la columna correcta. También puedes tocar la tarjeta y luego la columna. Pregúntate: ¿protege a la <b>persona del autor</b> o el <b>dinero que produce la obra</b>?</p>
+  <div class="dnd-pool" id="pool" role="group" aria-label="Situaciones por clasificar"></div>
+  <div class="zones">
+    <div class="zone moral" data-z="moral" role="button" tabindex="0" aria-label="Columna derechos morales">
+      <h3>Derechos morales</h3><p class="zsub">Vínculo del autor con su obra</p><div class="zlist"></div>
+    </div>
+    <div class="zone patr" data-z="patr" role="button" tabindex="0" aria-label="Columna derechos patrimoniales">
+      <h3>Derechos patrimoniales</h3><p class="zsub">Explotación económica de la obra</p><div class="zlist"></div>
+    </div>
+  </div>
+  <div class="meter" style="margin-top:14px"><span id="dCount">0 de 8</span><span class="track" aria-hidden="true"><i id="dBar"></i></span></div>
+  <div class="fb" id="dFb" aria-live="polite"></div>
+  <div id="cierre" hidden>
+    <h3 style="font-size:26px;margin:24px 0 12px">Tres ideas clave</h3>
+    <div class="ideas">
+      <div class="idea"><span class="n" aria-hidden="true">1</span><svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true"><rect x="6" y="8" width="32" height="28" rx="4" fill="#2A2420"/><path d="M12 18h14M12 26h20" stroke="#F0C477" stroke-width="3" stroke-linecap="round"/></svg><h3>El código es una obra</h3><p>El software está protegido por el derecho de autor, igual que un libro. <span class="vf" data-nota="Decisión Andina 351: confirmar que la protección no está subordinada a registro">La protección no depende de registrarlo</span>.</p></div>
+      <div class="idea"><span class="n" aria-hidden="true">2</span><svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="16" r="8" fill="#C9973A"/><path d="M8 40c2-10 8-14 14-14s12 4 14 14" fill="#C9973A"/></svg><h3>Lo moral se queda contigo</h3><p>Ser reconocido como autor y proteger la integridad de tu obra. <span class="vf" data-nota="Ley 23 de 1982 art. 30 y Decisión 351 art. 11: confirmar carácter inalienable e irrenunciable de los derechos morales">No se vende ni se renuncia a ello.</span></p></div>
+      <div class="idea"><span class="n" aria-hidden="true">3</span><svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="16" fill="#2F4A5C"/><text x="22" y="29" text-anchor="middle" font-size="20" font-weight="700" fill="#FBF6EA" font-family="sans-serif">$</text></svg><h3>Lo patrimonial se licencia</h3><p>Copiar, distribuir o adaptar son derechos de explotación: una licencia autoriza a otros a ejercer algunos de ellos.</p></div>
+    </div>
+    <div id="nextZone" style="margin-top:20px"></div>
+  </div>
+</section>
+
+  </main>
+
+  <aside class="apoyo" id="apoyo" aria-label="Panel de apoyo">
+    <div class="apoyo-head"><h2>Apoyo</h2><button class="iconbtn" id="apoyoClose" type="button" aria-label="Cerrar panel de apoyo">✕</button></div>
+    <div id="apoyoBody"></div>
+  </aside>
+</div>
+
+<footer class="pager">
+  <button class="btn ghost" id="prev" type="button">← Anterior</button>
+  <div class="pager-mid" id="pagerMid" aria-live="polite"></div>
+  <button class="btn" id="next" type="button">Siguiente →</button>
+</footer>
+
+<div id="aviso" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+var $=function(s,c){return (c||document).querySelector(s)}, $$=function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s))};
+var params=new URLSearchParams(location.search);
+function safeUrl(u){if(!u)return null;try{var x=new URL(u,location.href);return /^https?:$/.test(x.protocol)?x.href:null}catch(e){return null}}
+var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+var ICON_OK='<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#55622A"/><path d="M7 12.5l3.2 3.2L17 9" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+var ICON_BAD='<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#A3462B"/><path d="M8 8l8 8M16 8l-8 8" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>';
+var ICON_INFO='<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#2F4A5C"/><path d="M12 11v6M12 7.2v.1" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>';
+
+if(params.get('equipo')==='1')document.body.classList.add('equipo');
+
+/* ---------- Sonido (Web Audio, sin archivos) ---------- */
+var actx=null, muted=store.get('ova-lic-mute')==='1';
+function tone(seq){
+  if(muted)return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    if(actx.state==='suspended')actx.resume();
+    var t=actx.currentTime+0.01;
+    seq.forEach(function(s){
+      var o=actx.createOscillator(),g=actx.createGain();
+      o.type=s[2]||'sine';o.frequency.setValueAtTime(s[0],t);
+      g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(s[3]||0.08,t+0.012);g.gain.exponentialRampToValueAtTime(0.0001,t+s[1]);
+      o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+s[1]+0.03);t+=s[1]*0.8;
+    });
+  }catch(e){}
+}
+var sfx={
+  click:function(){tone([[700,.05,'triangle',.035]])},
+  ok:function(){tone([[523.25,.12,'sine',.08],[659.25,.12,'sine',.08],[783.99,.2,'sine',.08]])},
+  bad:function(){tone([[233,.16,'triangle',.07],[196,.24,'triangle',.07]])}
+};
+var btnSound=$('#btnSound');
+function paintSound(){btnSound.setAttribute('aria-pressed',String(!muted));btnSound.setAttribute('aria-label',muted?'Activar sonido':'Silenciar sonido');btnSound.title=muted?'Sonido desactivado':'Sonido activado';$('#icoOn').style.display=muted?'none':'';$('#icoOff').style.display=muted?'':'none'}
+btnSound.addEventListener('click',function(){muted=!muted;store.set('ova-lic-mute',muted?'1':'0');paintSound();if(!muted)sfx.click()});
+paintSound();
+
+/* ---------- Aviso ---------- */
+function aviso(msg){var a=$('#aviso');a.textContent=msg;a.classList.add('show');clearTimeout(aviso.t);aviso.t=setTimeout(function(){a.classList.remove('show')},4200)}
+
+/* ---------- Volver ---------- */
+var back=safeUrl(params.get('back')), bb=$('#btnBack');
+if(back){bb.href=back;bb.target='_top';bb.rel='noopener'}
+else{
+  bb.addEventListener('click',function(e){e.preventDefault();aviso('Para volver al cuadernillo, cierra esta ventana con la ✕ de la esquina.')});
+  setTimeout(function(){aviso('Cuando termines, cierra esta ventana con la ✕ para volver al cuadernillo.')},900);
+}
+var nextUrl=safeUrl(params.get('next'));
+
+/* ---------- Teclado para elementos role=button no nativos ---------- */
+document.addEventListener('keydown',function(e){
+  var t=e.target;
+  if((e.key==='Enter'||e.key===' ')&&t.getAttribute&&t.getAttribute('role')==='button'&&t.tagName!=='BUTTON'&&t.tagName!=='A'){e.preventDefault();t.dispatchEvent(new MouseEvent('click',{bubbles:true}))}
+});
+
+/* ---------- Retroalimentación ---------- */
+var secs=$$('.sec'), N=secs.length, titles=secs.map(function(s){return s.dataset.titulo});
+function fb(el,kind,titulo,cuerpo,repaso){
+  el.className='fb '+kind+(el.classList.contains('note')?' note':'');
+  var ic=kind==='ok'?ICON_OK:kind==='bad'?ICON_BAD:ICON_INFO;
+  el.innerHTML='<p class="fb-h">'+ic+'<span>'+titulo+'</span></p><div>'+cuerpo+'</div>'+(repaso!=null?'<p style="margin:8px 0 0"><button type="button" class="linkbtn" data-go="'+repaso+'">Repasar: '+titles[repaso]+' →</button></p>':'');
+}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-go]');if(b){go(+b.dataset.go)}});
+
+/* ---------- Navegación ---------- */
+var state={cur:0,visited:{},done:{}};
+var navList=$('#navList'), segs=$('#segs'), stage=$('#stage');
+secs.forEach(function(s,i){
+  var li=document.createElement('li');
+  li.innerHTML='<button type="button" data-i="'+i+'"><span class="num" aria-hidden="true">'+(i+1)+'</span><span class="lbl">'+s.dataset.titulo+'<span class="sub">'+s.dataset.sub+'</span></span><span class="sr st"></span></button>';
+  navList.appendChild(li);
+  var sg=document.createElement('button');sg.type='button';sg.className='seg';sg.dataset.i=i;sg.setAttribute('aria-label','Sección '+(i+1)+': '+s.dataset.titulo);
+  segs.appendChild(sg);
+});
+navList.addEventListener('click',function(e){var b=e.target.closest('button[data-i]');if(b)go(+b.dataset.i)});
+segs.addEventListener('click',function(e){var b=e.target.closest('button[data-i]');if(b)go(+b.dataset.i)});
+$('#prev').addEventListener('click',function(){go(state.cur-1)});
+$('#next').addEventListener('click',function(){
+  if(state.cur<N-1)go(state.cur+1);
+  else if(nextUrl){window.top.location.href=nextUrl}
+});
+
+function paint(){
+  $$('li',navList).forEach(function(li,i){
+    var b=li.firstChild;b.setAttribute('aria-current',i===state.cur?'true':'false');
+    li.classList.toggle('hecho',!!state.done[i]);
+    li.querySelector('.num').textContent=state.done[i]?'✓':(i+1);
+    li.querySelector('.st').textContent=state.done[i]?' (completada)':state.visited[i]?' (visitada)':'';
+  });
+  $$('.seg',segs).forEach(function(s,i){
+    s.classList.toggle('visto',!!state.visited[i]&&!state.done[i]);s.classList.toggle('hecho',!!state.done[i]);
+    if(i===state.cur)s.setAttribute('aria-current','step');else s.removeAttribute('aria-current');
+  });
+  $('#prev').disabled=state.cur===0;
+  var nx=$('#next');
+  if(state.cur<N-1){nx.disabled=false;nx.textContent='Siguiente →'}
+  else{nx.disabled=!nextUrl;nx.textContent=nextUrl?'Continuar →':'Fin de la pieza'}
+  $('#pagerMid').textContent=(state.cur+1)+' / '+N+' · '+titles[state.cur];
+}
+function markDone(i){if(!state.done[i]){state.done[i]=true;paint()}}
+function go(i,opts){
+  opts=opts||{};
+  i=Math.max(0,Math.min(N-1,i));
+  state.cur=i;state.visited[i]=true;
+  if(!secs[i].dataset.actividad)state.done[i]=true;
+  secs.forEach(function(s,k){s.hidden=k!==i});
+  $('#apoyoBody').innerHTML=APOYO[i];
+  stage.scrollTop=0;
+  paint();
+  if(opts.focus!==false){var h=secs[i].querySelector('h2');if(h)h.focus({preventScroll:true})}
+  if(opts.sound!==false)sfx.click();
+}
+document.addEventListener('keydown',function(e){
+  if(e.altKey||e.ctrlKey||e.metaKey)return;
+  var a=document.activeElement, tag=a?a.tagName:'';
+  var free=!a||a===document.body||a===stage||/^H[1-6]$/.test(tag)||(a.classList&&a.classList.contains('sec'));
+  if(!free)return;
+  if(e.key==='ArrowRight'){e.preventDefault();go(state.cur+1)}
+  if(e.key==='ArrowLeft'){e.preventDefault();go(state.cur-1)}
+});
+
+/* Panel de apoyo (cajón en pantallas medianas) */
+var apoyo=$('#apoyo'), btnA=$('#btnApoyo');
+function setApoyo(open){apoyo.classList.toggle('open',open);btnA.setAttribute('aria-expanded',String(open));if(open)$('#apoyoClose').focus();else btnA.focus()}
+btnA.addEventListener('click',function(){setApoyo(!apoyo.classList.contains('open'))});
+$('#apoyoClose').addEventListener('click',function(){setApoyo(false)});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&apoyo.classList.contains('open'))setApoyo(false)});
+
+
+/* ---------- Panel de apoyo ---------- */
+var APOYO=[
+'<div class="blk"><h3>Glosario</h3><dl><dt>Obra</dt><dd>Creación protegida por el derecho de autor; aquí, el programa.</dd><dt>Derechos morales</dt><dd>Protegen el vínculo personal del autor con su obra.</dd><dt>Derechos patrimoniales</dt><dd>Permiten controlar la explotación económica de la obra.</dd><dt>SPDX-FileCopyrightText</dt><dd>Etiqueta estándar para indicar el titular del copyright de un archivo.</dd></dl></div>'+
+'<div class="blk fuente"><h3>Fuentes</h3><ul><li>Ley 23 de 1982, sobre derechos de autor.</li><li>Decisión Andina 351 de 1993, régimen común sobre derecho de autor y derechos conexos.</li><li><a href="https://reuse.software/" target="_blank" rel="noopener">Especificación REUSE</a></li></ul></div>',
+'<div class="blk"><h3>Pista</h3><p>Si la acción tiene sentido aunque no haya dinero de por medio y protege a la <b>persona</b> del autor, es moral. Si se trata de <b>copiar, distribuir, adaptar o cobrar</b>, es patrimonial.</p></div>'+
+'<div class="blk"><h3>Lo que sigue</h3><p>En la página 6, <i>Marco legal colombiano</i>, verás qué normas protegen estos derechos en Colombia.</p></div>'
+];
+
+/* ---------- Paso 2 · Clasificar ---------- */
+var ITEMS=[
+ {id:'m1',z:'moral',t:'Exigir que tu nombre aparezca como autor del programa',w:'Es el reconocimiento de la autoría (paternidad): protege el vínculo entre tú y tu obra, no un ingreso.'},
+ {id:'m2',z:'moral',t:'Oponerte a una modificación que deforme tu programa y afecte tu reputación',w:'Es la protección de la integridad de la obra: un derecho de la persona del autor.'},
+ {id:'m3',z:'moral',t:'Decidir si tu programa se da a conocer o queda inédito',w:'Decidir sobre la divulgación de la obra es una facultad personal del autor.'},
+ {id:'m4',z:'moral',t:'Seguir figurando como autor en los créditos aunque hayas vendido los derechos de explotación',w:'Vender la explotación no borra la autoría: el reconocimiento como autor se conserva.'},
+ {id:'p1',z:'patr',t:'Vender copias del programa',w:'Distribuir copias a cambio de dinero es explotación económica de la obra.'},
+ {id:'p2',z:'patr',t:'Autorizar que una empresa lo instale en 500 equipos',w:'Autorizar la reproducción en muchos equipos es justo lo que hace una licencia: ejercer un derecho patrimonial.'},
+ {id:'p3',z:'patr',t:'Permitir que otra empresa adapte el programa a una nueva plataforma',w:'Adaptar o transformar la obra es un acto de explotación que el titular puede autorizar o cobrar.'},
+ {id:'p4',z:'patr',t:'Cobrar a terceros por usar tu código en sus productos',w:'Cobrar por licenciar el código es explotación económica directa.'}
+];
+var ORDER=['p2','m1','p4','m3','p1','m2','p3','m4'];
+var ZN={moral:'Derechos morales',patr:'Derechos patrimoniales'};
+var pool=$('#pool'), zones=$$('.zone'), selC=null, placed={}, first=0, tried={};
+function item(id){return ITEMS.filter(function(x){return x.id===id})[0]}
+ORDER.forEach(function(id){
+  var it=item(id),c=document.createElement('button');
+  c.type='button';c.className='dcard';c.dataset.id=id;c.draggable=true;c.setAttribute('aria-pressed','false');c.textContent=it.t;
+  c.addEventListener('click',function(){
+    if(placed[id])return;
+    if(selC&&selC!==c)selC.setAttribute('aria-pressed','false');
+    selC=selC===c?null:c;if(selC)selC.setAttribute('aria-pressed','true');
+    zones.forEach(function(z){z.classList.toggle('armed',!!selC)});sfx.click();
+    if(selC&&matchMedia('(max-width:760px)').matches)$('.zones').scrollIntoView({behavior:'smooth',block:'nearest'});
+  });
+  c.addEventListener('dragstart',function(e){if(placed[id]){e.preventDefault();return}selC=c;c.classList.add('dragging');try{e.dataTransfer.setData('text/plain',id)}catch(err){}});
+  c.addEventListener('dragend',function(){c.classList.remove('dragging')});
+  pool.appendChild(c);
+});
+zones.forEach(function(z){
+  z.addEventListener('click',function(e){if(e.target.closest('.dcard'))return;if(selC)drop(selC,z.dataset.z)});
+  z.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&e.target===z){e.preventDefault();if(selC)drop(selC,z.dataset.z);else aviso('Primero selecciona una tarjeta.')}});
+  z.addEventListener('dragover',function(e){e.preventDefault();z.classList.add('over')});
+  z.addEventListener('dragleave',function(){z.classList.remove('over')});
+  z.addEventListener('drop',function(e){e.preventDefault();z.classList.remove('over');if(selC)drop(selC,z.dataset.z)});
+});
+function drop(c,zk){
+  var id=c.dataset.id,it=item(id);
+  zones.forEach(function(z){z.classList.remove('armed')});
+  c.setAttribute('aria-pressed','false');selC=null;
+  if(it.z===zk){
+    if(!tried[id])first++;
+    placed[id]=1;c.classList.add('placed');c.draggable=false;c.setAttribute('aria-disabled','true');
+    $('.zone[data-z="'+zk+'"] .zlist').appendChild(c);
+    sfx.ok();fb($('#dFb'),'ok','Correcto: '+ZN[zk].toLowerCase(),'<p>'+it.w+'</p>');
+    var n=Object.keys(placed).length;$('#dCount').textContent=n+' de 8';$('#dBar').style.width=(n/8*100)+'%';
+    if(n===8)finish();
+  }else{
+    tried[id]=1;c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');sfx.bad();
+    var other=it.z==='moral'?'patrimonial':'moral';
+    fb($('#dFb'),'bad','Esa situación es '+other,'<p>«'+it.t+'». '+it.w+'</p><p>Inténtalo en la otra columna.</p>');
+  }
+}
+function finish(){
+  markDone(1);
+  fb($('#dFb'),'ok','Ocho de ocho','<p>Acertaste <b>'+first+' de 8</b> al primer intento. Vuelve al caso inicial: publicar tu código sin tu nombre vulnera un <b>derecho moral</b>; venderlo sin tu autorización vulnera un <b>derecho patrimonial</b>.</p>');
+  $('#cierre').hidden=false;sfx.ok();
+  setTimeout(function(){$('#cierre').scrollIntoView({behavior:'smooth',block:'start'})},500);
+}
+$('#nextZone').innerHTML=nextUrl?'<a class="btn" href="'+nextUrl+'" target="_top">Continuar con la siguiente página →</a>':'<p class="ej">Siguiente en el OVA: <b>Marco legal colombiano</b>. Vuelve al cuadernillo para abrirla.</p>';
+
+/* ---------- Inicio ---------- */
+var open=parseInt(params.get('open'),10);
+go(open>=1&&open<=N?open-1:0,{focus:false,sound:false});
+})();
+</script>
+</body>
+</html>
